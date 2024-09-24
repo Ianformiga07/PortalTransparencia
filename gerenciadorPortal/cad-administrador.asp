@@ -250,7 +250,7 @@
                                             <dl>
                                                 <dt class="font-w-100">
                                                     <!-- Checkbox com iCheck -->
-                                                    <input type="checkbox" class="flat-red" name="permissao_documentos" value="9"> Documentos
+                                                    <input type="checkbox" class="flat-red" name="permissao_RH" value="9"> Recursos Humanos
                                                 </dt>
                                             </dl>
                                         </label>

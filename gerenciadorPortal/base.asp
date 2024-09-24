@@ -55,9 +55,9 @@
     <!-- Logo -->
     <a href="index.asp" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
-      <img src="../Site/assets/img/logoicon.png" alt="" class="logo-mini" width="45" height="45">
+      <img src="images/logoicon.png" alt="" class="logo-mini" width="45" height="45">
       <!-- logo for regular state and mobile devices -->
-      <img src="../Site/assets/img/logonova.png" alt="" class="logo-lg" width="150" height="50">
+      <img src="images/logonova.png" alt="" class="logo-lg" width="150" height="50">
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
