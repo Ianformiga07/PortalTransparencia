@@ -1,4 +1,8 @@
+<!--#include file ="lib/Conexao.asp"-->
 <!--#include file="base.asp"-->
+<%
+response.write Session("IdUsu")
+%>
 <div class="content-wrapper">
   <!-- Content Header -->
   <section class="content-header bg-white p-bottom-5">
