@@ -1,4 +1,124 @@
   <!--#include file="base.asp"-->
+  <%
+  if request("Operacao") = 1 then 'CADASTRAR'
+    call abreConexao
+    sql = "INSERT INTO cam_servidores (CPF, NomeCompleto, DataNascimento, Sexo, EstadoCivil, " & _
+        "Matricula, RG, OrgaoExpedidor, Escolaridade, CEP, Endereco, Numero, Bairro, " & _
+        "Complemento, Cidade, UF, Celular, Email, TipoAdmissao, Cargo, Departamento, " & _
+        "Decreto, DataDecreto, CargaHoraria, DataAdmissao, Banco, Agencia, Conta, " & _
+        "TipoConta, Operacao) VALUES (" & _
+        "'" & Request.Form("cpf") & "', '" & _
+        Request.Form("nomeCompleto") & "', '" & _
+        Request.Form("dataNasc") & "', '" & _
+        Request.Form("sexo") & "', '" & _
+        Request.Form("estadoCivil") & "', '" & _
+        Request.Form("matricula") & "', '" & _
+        Request.Form("rg") & "', '" & _
+        Request.Form("orgaoExpedidor") & "', " & _
+        Request.Form("escolaridade") & ", '" & _
+        Request.Form("cep") & "', '" & _
+        Request.Form("endereco") & "', '" & _
+        Request.Form("numero") & "', '" & _
+        Request.Form("bairro") & "', '" & _
+        Request.Form("complemento") & "', '" & _
+        Request.Form("cidade") & "', '" & _
+        Request.Form("uf") & "', '" & _
+        Request.Form("celular") & "', '" & _
+        Request.Form("email") & "', '" & _
+        Request.Form("tipoAdmissao") & "', '" & _
+        Request.Form("cargo") & "', '" & _
+        Request.Form("departamento") & "', '" & _
+        Request.Form("decreto") & "', '" & _
+        Request.Form("dataDecreto") & "', '" & _
+        Request.Form("cargaHoraria") & "', '" & _
+        Request.Form("dataAdmissao") & "', '" & _
+        Request.Form("banco") & "', '" & _
+        Request.Form("agencia") & "', '" & _
+        Request.Form("conta") & "', '" & _
+        Request.Form("tipoConta") & "', '" & _
+        Request.Form("operacao") & "')"
+    call fechaConexao
+  END IF
+
+call abreConexao
+
+if Request("CpfVisualizar") <> ""  then
+   
+   sql = "SELECT * from cam_servidores where CPF = '"&replace(replace(replace(Request("CpfVisualizar"),".",""),".",""),"-","")&"'"
+   response.write sql
+   response.end
+   set rs = conn.execute(sql)
+
+end if
+'Session("id_modulo") = rs("id_modulo")
+call fechaConexao
+  %>
+
+<script>
+    function mascaraCPF(CPF) {
+        // Remove tudo que não é dígito
+        cpf = cpf.replace(/[^\d]+/g, '');
+        
+        // Aplica a máscara
+        if (cpf.length <= 3) {
+            cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+        } 
+        else if (cpf.length <= 6) {
+            cpf = cpf.replace(/(\d{3})(\d{3})(\d)/, '$1.$2.$3');
+        } 
+        else if (cpf.length <= 9) {
+            cpf = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d)/, '$1.$2.$3-$4');
+        } 
+        else {
+            cpf = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{1})(\d)/, '$1.$2.$3-$4$5');
+        }
+        
+        // Atualiza o campo de entrada
+        document.getElementById('CPF').value = cpf;
+    }
+
+    function validarCPF() {
+      var cpf = document.getElementById("CPF").value.replace(/[^\d]+/g, '');
+      
+      if (cpf.length != 11 ||
+        cpf == "00000000000" || cpf == "11111111111" ||
+        cpf == "22222222222" || cpf == "33333333333" ||
+        cpf == "44444444444" || cpf == "55555555555" ||
+        cpf == "66666666666" || cpf == "77777777777" ||
+        cpf == "88888888888" || cpf == "99999999999") {
+        alert("CPF inválido");
+        return false;
+      }
+      
+      var soma = 0;
+      var resto;
+      for (var i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+      resto = (soma * 10) % 11;
+      if ((resto == 10) || (resto == 11)) resto = 0;
+      if (resto != parseInt(cpf.substring(9, 10))) {
+        alert("CPF inválido");
+        return false;
+      }
+
+      soma = 0;
+      for (var i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+      resto = (soma * 10) % 11;
+      if ((resto == 10) || (resto == 11)) resto = 0;
+      if (resto != parseInt(cpf.substring(10, 11))) {
+        alert("CPF inválido");
+        return false;
+      }
+
+      return true;
+    }
+
+function verificar_cadastro()
+{   
+    document.frmServidor.CpfVisualizar.value = document.frmServidor.CPF.value;
+	document.frmServidor.action = "cad-servidores.asp";
+	document.frmServidor.submit();
+}
+</script>
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -14,7 +134,8 @@
 
 <!-- Main content -->
     <section class="content">
-
+    <form role="form" name="frmServidor" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="CpfVisualizar" id="CpfVisualizar">
       <div class="row">
         <div class="col-md-3">
 
@@ -43,7 +164,7 @@
 
                 <!-- /.box-header -->
                 <!-- form start -->
-                <form role="form">
+                
                 <div class="box-body">
                 <div class="box-header text-blue" style="border: none; padding: 0;">
                     <div class="box-title text-blue" style="font-size: 1.25em; margin-bottom: 10px; margin-left: 0;">
@@ -54,7 +175,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <label for="CPF">CPF</label>
-                                <input type="text" class="form-control" id="CPF" placeholder="Digite o CPF">
+                                <input type="text" class="form-control" id="CPF" placeholder="Digite o CPF" oninput="mascaraCPF(this.value)" onblur="if (validarCPF() && this.value) verificar_cadastro()">
                             </div>
                             <div class="col-md-8">
                                 <label for="nomeCompleto">Nome Completo</label>
@@ -101,20 +222,21 @@
                                 <label for="nomeCompleto">Orgão Expedidor</label>
                                 <input type="text" class="form-control" id="nomeCompleto" placeholder="Digite o Orgão Expedidor">
                             </div>
+                            <%
+                            call abreConexao 
+                            sql = "SELECT * FROM cam_escolaridade ORDER BY id_escolaridade"
+                            set rs2 = conn.execute(sql) 
+                            %> 
                             <div class="col-md-4">
                                 <label for="apelido">Escolaridade</label>
                                 <select class="form-control">
                                     <option> -- Selecionar --</option>
-                                    <option>Fundamental Incompleto</option>
-                                    <option>Fundamental Completo</option>
-                                    <option>Ensino Médio Incompleto</option>
-                                    <option>Ensino Médio Completo</option>
-                                    <option>Superior Incompleto</option>
-                                    <option>Superior Completo</option>
-                                    <option>Pós-Graduação</option>
-                                    <option>Mestrado</option>
-                                    <option>Doutorado</option>
-                                    <option>Pós-Doutorado</option>
+                            <%do while not rs2.eof%>
+                                    <option <%if  rtrim(id_escolaridade) = rtrim(rs2("id_escolaridade")) then response.write("selected") end if%> value="<%=rs2("id_escolaridade")%>"><%=rs2("desc_escolaridade")%></option>
+                            <% rs2.movenext 
+                            loop 
+                            call fechaConexao
+                            %>
                                 </select>
                             </div>
                         </div>
@@ -213,62 +335,55 @@
                 </div>
                     <div class="form-group">
                         <div class="row">
+                            <%
+                            call abreConexao 
+                            sql = "SELECT * FROM cam_admissao ORDER BY id_tipoAdmissao"
+                            set rs3 = conn.execute(sql) 
+                            %> 
                             <div class="col-md-4">
-                                <label for="apelido">Tipo de Admissão</label>
-                                <select class="form-control">
+                                <label for="admissao">Tipo de Admissão</label>
+                                <select class="form-control" id="admissao">
                                     <option> -- Selecionar --</option>
-                                    <option value="Concursado">Concursado</option>
-                                    <option value="Contrato">Contrato</option>
-                                    <option value="Comissionado">Comissionado</option>
-                                    <option value="Estagiário">Estagiário</option>
-                                    <option value="Terceirizado">Terceirizado</option>
-                                    <option value="Efetivo">Efetivo</option>
-                                    <option value="Aposentado">Aposentado</option>
-                                    <option value="Eletivo">Eletivo (Vereador)</option>
+                            <%do while not rs3.eof%>
+                                    <option <%if  rtrim(id_tipoAdmissao) = rtrim(rs3("id_tipoAdmissao")) then response.write("selected") end if%> value="<%=rs3("id_tipoAdmissao")%>"><%=rs3("desc_admissao")%></option>
+                            <% rs3.movenext 
+                            loop 
+                            call fechaConexao
+                            %>
                                 </select>
                             </div>
+                            <%
+                            call abreConexao 
+                            sql = "SELECT * FROM cam_cargos ORDER BY id_cargo"
+                            set rs4 = conn.execute(sql) 
+                            %> 
                             <div class="col-md-4">
                                 <label for="cargo">Cargo</label>
                                 <select class="form-control" id="cargo" onchange="mostrarCamposAdicionais(this.value)">
                                     <option> -- Selecionar --</option>
-                                    <option value="Assessor de Gabinete">Assessor de Gabinete</option>
-                                    <option value="Assistente Administrativo">Assistente Administrativo</option>
-                                    <option value="Auxiliar de Serviços Gerais">Auxiliar de Serviços Gerais</option>
-                                    <option value="Contador">Contador</option>
-                                    <option value="Controlador Interno">Controlador Interno</option>
-                                    <option value="Diretor Legislativo">Diretor Legislativo</option>
-                                    <option value="Procurador Jurídico">Procurador Jurídico</option>
-                                    <option value="Secretário Legislativo">Secretário Legislativo</option>
-                                    <option value="Técnico em Informática">Técnico em Informática</option>
-                                    <option value="Vigilante">Vigilante</option>
-                                    <option value="Chefe de Gabinete">Chefe de Gabinete</option>
-                                    <option value="Assessor Parlamentar">Assessor Parlamentar</option>
-                                    <option value="Assessor Jurídico">Assessor Jurídico</option>
-                                    <option value="Motorista">Motorista</option>
-                                    <option value="Vereador">Vereador</option>
-                                    <option value="Tesoureiro">Tesoureiro</option>
+                            <%do while not rs4.eof%>
+                                    <option <%if  rtrim(id_cargo) = rtrim(rs4("id_cargo")) then response.write("selected") end if%> value="<%=rs4("id_cargo")%>"><%=rs4("desc_cargo")%></option>
+                            <% rs4.movenext 
+                            loop 
+                            call fechaConexao
+                            %>
                                 </select>
                             </div>
+                            <%
+                            call abreConexao 
+                            sql = "SELECT * FROM cam_departamento ORDER BY id_departamento"
+                            set rs5 = conn.execute(sql) 
+                            %> 
                             <div class="col-md-4">
-                                <label for="apelido">Cargo Recebimento</label>
-                                <select class="form-control">
+                                <label for="departamento">Departamento</label>
+                                <select class="form-control" id="departamento">
                                     <option> -- Selecionar --</option>
-                                    <option value="Assessor de Gabinete">Assessor de Gabinete</option>
-                                    <option value="Assistente Administrativo">Assistente Administrativo</option>
-                                    <option value="Auxiliar de Serviços Gerais">Auxiliar de Serviços Gerais</option>
-                                    <option value="Contador">Contador</option>
-                                    <option value="Controlador Interno">Controlador Interno</option>
-                                    <option value="Diretor Legislativo">Diretor Legislativo</option>
-                                    <option value="Procurador Jurídico">Procurador Jurídico</option>
-                                    <option value="Secretário Legislativo">Secretário Legislativo</option>
-                                    <option value="Técnico em Informática">Técnico em Informática</option>
-                                    <option value="Vigilante">Vigilante</option>
-                                    <option value="Chefe de Gabinete">Chefe de Gabinete</option>
-                                    <option value="Assessor Parlamentar">Assessor Parlamentar</option>
-                                    <option value="Assessor Jurídico">Assessor Jurídico</option>
-                                    <option value="Motorista">Motorista</option>
-                                    <option value="Vereador">Vereador</option>
-                                    <option value="Tesoureiro">Tesoureiro</option>
+                            <%do while not rs5.eof%>
+                                    <option <%if  rtrim(id_departamento) = rtrim(rs5("id_departamento")) then response.write("selected") end if%> value="<%=rs5("id_departamento")%>"><%=rs5("desc_departamento")%></option>
+                            <% rs5.movenext 
+                            loop 
+                            call fechaConexao
+                            %>
                                 </select>
                             </div>
 
