@@ -1,141 +1,200 @@
+<%@LANGUAGE="VBSCRIPT" CODEPAGE="65001"%>
+<!--#include file ="lib/Conexao.asp"-->
 <!--#include file="base.asp"-->
-<!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
-    <!-- Content Header -->
-    <section class="content-header bg-white p-bottom-5">
-        <h1 class="font-w-300">
-            <i class="fa fa-fw fa-user text-blue"></i> Cadastrar Servidor
-        </h1>
-        <ol class="breadcrumb font-s-1">
-            <li><a href="index.asp"><i class="fa fa-dashboard"></i> Painel</a></li> / 
-            <li><a href="servidores.asp">Servidores</a></li> /
-            <span class="font-w-600">Cadastrar</span>
-        </ol>
-    </section>
+
+<%
+if Session("CPF_Usu") = "" then
+response.Write("<script>")
+response.Write("alert('O Usuáio não está logado!');")
+response.Write("window.location.assign('logout.asp')")
+response.Write("</script>")
+end if
+
+
+'evt  = Request("evt")
+
+ 
+
+'response.write(int(cod))
+'response.end
+call abreConexao
+
+if Request("CpfVisualizar") <> ""  then
+   
+   sql = "SELECT * from GU_CadPessoasUp where CPF = '"&replace(replace(replace(Request("CpfVisualizar"),".",""),".",""),"-","")&"'"
+   response.write sql
+   set rs = conn.execute(sql)
+
+   if not rs.eof then
+CPF             =  rs("CPF")
+Nome            =  rs("Nome")
+CodPrograma     =  rs("CodPrograma")
+idPerfil        =  rs("idPerfil")
+StatusUsuario   =  rs("status")
+DataCadUsuario  =  rs("DataCadUsuario")
+cpfCad          =  rs("cpfCad")
+Existe = 1
+
+
+   bot        = "Alterar"   
+   else 
+   bot        = "Incluir" 
+   end if 
+
+
+else
+   bot       = "Incluir"
+end if
+'Session("id_modulo") = rs("id_modulo")
+call fechaConexao
+%>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.2.1/dist/sweetalert2.min.js"></script>
+<script src="javascript/Mascara.js"></script>
+<script>
+function validar(){
+if(document.frmCadPessoa.txtCPF.value == ""){
+        Swal.fire({
+ 		    icon: 'error',
+  			title: 'Oops...',
+  			text: 'Obrigatorio Digitar o CPF!',
+		 })
+         document.frmCadPessoa.txtCPF.focus();
+         return false;
+     }
+	else
+	if(!ValidarCPF(document.frmCadPessoa.txtCPF.value.replace(".","").replace(".","").replace("-",""))){
+   			Swal.fire({
+ 		    icon: 'error',
+  			title: 'Oops...',
+  			text: 'CPF Invalido ou está na formatação errada 000.000.000-00!',
   
-    <!-- Main content -->
-    <section class="content">
-      <div class="row">
-        <div class="col-xs-12">
-          <div class="box box-primary">
-            <!-- form start -->
-            <form role="form" action="cadastrar_servidor.asp" method="post" enctype="multipart/form-data">
-              <div class="box-body">
-                <!-- Dados Pessoais -->
-                <h4>Dados Pessoais</h4>
-                <div class="form-group">
-                  <label for="nome">Nome Completo</label>
-                  <input type="text" class="form-control" id="nome" name="nome" required>
-                </div>
-  
-                <div class="form-group">
-                  <label for="cpf">CPF</label>
-                  <input type="text" class="form-control" id="cpf" name="cpf" required>
-                </div>
-  
-                <div class="form-group">
-                  <label for="data_nascimento">Data de Nascimento</label>
-                  <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" required>
-                </div>
-  
-                <div class="form-group">
-                  <label for="endereco">Endereço</label>
-                  <input type="text" class="form-control" id="endereco" name="endereco" required>
-                </div>
-  
-                <div class="form-group">
-                  <label for="telefone">Telefone</label>
-                  <input type="text" class="form-control" id="telefone" name="telefone">
-                </div>
-  
-                <div class="form-group">
-                  <label for="email">E-mail</label>
-                  <input type="email" class="form-control" id="email" name="email">
-                </div>
-  
-                <!-- Dados Profissionais -->
-                <h4>Dados Profissionais</h4>
-                <div class="form-group">
-                  <label for="cargo">Cargo</label>
-                  <select class="form-control" id="cargo" name="cargo" required>
-                    <option value="">Selecione</option>
-                    <option value="Assistente">Assistente</option>
-                    <option value="Analista">Analista</option>
-                    <option value="Gerente">Gerente</option>
-                    <option value="Coordenador">Coordenador</option>
-                    <!-- Adicione mais opções conforme necessário -->
-                  </select>
-                </div>
-  
-                <div class="form-group">
-                  <label for="departamento">Departamento</label>
-                  <select class="form-control" id="departamento" name="departamento" required>
-                    <option value="">Selecione</option>
-                    <option value="Recursos Humanos">Recursos Humanos</option>
-                    <option value="Financeiro">Financeiro</option>
-                    <option value="Jurídico">Jurídico</option>
-                    <option value="Tecnologia">Tecnologia</option>
-                    <!-- Adicione mais opções conforme necessário -->
-                  </select>
-                </div>
-  
-                <div class="form-group">
-                  <label for="data_admissao">Data de Admissão</label>
-                  <input type="date" class="form-control" id="data_admissao" name="data_admissao" required>
-                </div>
-  
-                <div class="form-group">
-                  <label for="status">Status</label>
-                  <select class="form-control" id="status" name="status" required>
-                    <option value="">Selecione</option>
-                    <option value="Ativo">Ativo</option>
-                    <option value="Inativo">Inativo</option>
-                    <option value="Licença">Licença</option>
-                  </select>
-                </div>
-  
-                <!-- Dados Bancários -->
-                <h4>Dados Bancários</h4>
-                <div class="form-group">
-                  <label for="banco">Banco</label>
-                  <input type="text" class="form-control" id="banco" name="banco" required>
-                </div>
-  
-                <div class="form-group">
-                  <label for="agencia">Agência</label>
-                  <input type="text" class="form-control" id="agencia" name="agencia" required>
-                </div>
-  
-                <div class="form-group">
-                  <label for="conta">Conta</label>
-                  <input type="text" class="form-control" id="conta" name="conta" required>
-                </div>
-  
-                <div class="form-group">
-                  <label for="tipo_conta">Tipo de Conta</label>
-                  <select class="form-control" id="tipo_conta" name="tipo_conta" required>
-                    <option value="">Selecione</option>
-                    <option value="Corrente">Corrente</option>
-                    <option value="Poupança">Poupança</option>
-                    <!-- Adicione mais opções conforme necessário -->
-                  </select>
-                </div>
-  
-                <div class="form-group">
-                  <label for="observacoes">Observações</label>
-                  <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
-                </div>
-              </div>
-              
-              <!-- Submit Button -->
-              <div class="box-footer">
-                  <button type="submit" class="btn btn-primary">Cadastrar Servidor</button>
-              </div>
-            </form>
-          </div>
+})
+     document.frmCadPessoa.txtCPF.focus();
+	 return false;
+}
+if(document.frmCadPessoa.txtNome.value == ""){
+        Swal.fire({
+ 		    icon: 'error',
+  			title: 'Oops...',
+  			text: 'Obrigatorio Digitar o Nome Completo!',
+		 })
+         document.frmCadPessoa.txtNome.focus();
+         return false;
+     }
+if(document.frmCadPessoa.perfil.value == ""){
+        Swal.fire({
+ 		    icon: 'error',
+  			title: 'Oops...',
+  			text: 'Obrigatorio Selecionar o Perfil!',
+		 })
+         document.frmCadPessoa.perfil.focus();
+         return false;
+     }
+if(document.frmCadPessoa.programas.value == ""){
+        Swal.fire({
+ 		    icon: 'error',
+  			title: 'Oops...',
+  			text: 'Obrigatorio Selecionar o programa!',
+		 })
+         document.frmCadPessoa.programas.focus();
+         return false;
+     }
+else{
+    document.frmCadPessoa.action = "manu_CadPessoa.asp";
+}
+
+}
+
+function verificar_cadastro()
+{   
+    document.frmCadPessoa.CpfVisualizar.value = document.frmCadPessoa.txtCPF.value;
+	document.frmCadPessoa.action = "frm_CadPessoa.asp";
+	document.frmCadPessoa.submit();
+}
+</script>
+<body class="sb-nav-fixed">
+    <form method=post name="frmCadPessoa" action="manu_CadPessoa.asp">
+    <input type="hidden" name="CpfVisualizar" id="CpfVisualizar">
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <ul>&nbsp</ul>
+                        <div class="card mb-4">
+                        <h5 class="mt-4" style="margin-left:15px">Cadastro de Usuário</h5>
+                            <div class="card-body">
+                                <div class="form-group row">
+                                    <div class="col-4">
+                                        <label for="CPF" class="col-form-label col-form-label-sm" >CPF</label>
+                                        <input type="text" class="form-control col-form-sm" onKeyPress="MascaraCPF(txtCPF)"  name="txtCPF" id="txtCPF"  value="<%=request("txtCPF")%>" maxlength="14" onblur="verificar_cadastro(this.value);" <%IF Existe = 1 THEN%> readonly <%END IF%>/>
+                                    </div>
+                                    <div class="col">
+                                        <label for="txtNome" class="col-form-label col-form-label-sm" >Nome Completo</label>
+                                        <input type="text" class="form-control col-form-sm" id="txtNome" name="txtNome" onKeyUp="maiuscula(this)" size="60"  value="<%=Nome%>"/>
+                                    </div>
+                                </div>
+                                    <div class="form-group row g-3">
+                                    <div class="col-3">
+                                            
+                                    <% 
+                                    call abreConexao 
+                                    sql="SELECT idPerfil, Perfil FROM GU_Perfil order by Perfil"
+                                    set rs = conn.execute(sql) 
+                                    %>
+                                     <label for="perfil" class="col-form-label col-form-label-sm" >Perfil</label>
+                                        <select name="perfil" id="perfil"  class="select2-single form-control col-form-label-sm" >
+                                        <option value="">--- Selecionar ---</option>
+                                        <%do while not rs.eof%>
+                                        <option value="<%=rs("idPerfil")%>" <%if clng(rs("idPerfil")) = clng(idPerfil) then%>selected <% end if%>><%=rs("Perfil")%>
+                                        </option>
+                                    <% rs.movenext 
+                                       loop 
+                                    call fechaConexao
+                                    %>
+                                    </select>
+                                        </div>
+                                        
+                                    <div class="col-3">
+                                    <% 
+                                    call abreConexao 
+                                    sql = "SELECT * FROM GU_Programas WHERE status = 1 order by Sigla"
+                                    set rs1 = conn.execute(sql) 
+                                    %>
+                                    <label for="programas" class="col-form-label col-form-label-sm" >Pastas</label>
+                                    <select name="programas" id="programas" class="select2-single form-control col-form-label-sm" >
+                                        <option value="">--- Selecionar ---</option>
+                                           <%do while not rs1.eof%>
+                                        <option value="<%=rs1("id")%>" <%if rs1("id") = CodPrograma then%>selected <%end if%>><%=rs1("Sigla")&"-"&rs1("Programas")%>
+                                        </option>
+                                    <% rs1.movenext 
+                                                loop 
+                                    call fechaConexao
+                                    %>
+                                    </select>   
+                                            </div>
+                                            <div class="col-3">
+                                            <%IF EXISTE = 1 THEN%>
+                                    <label for="status" class="col-form-label col-form-label-sm" >Status</label>
+                                    <select name="status" id="status" class="select2-single form-control col-form-label-sm">
+                                    <option value="1" <%if StatusUsuario = true then%> selected <%end if%>> Ativo </option>
+                                    <option value="0" <%if StatusUsuario = false then%> selected <%end if%>> Inativo </option>
+                                    </select>
+                                    <%END IF%>
+                                    <input type="text" name="cpf" id="cpf" value="04426330173" hidden/>
+                                            </div>
+                                            </div>
+                                    <div class="form-group">
+                                    <div class="col-3">
+                                    <button type="submit" name="Botao" class="btn btn-outline-dark btn-icon-split" style="margin: 15px 0 0 0" onClick="return validar();" value="<%=bot%>"><%=bot%></button>
+                                            </div>
+                                            </div>
+	                            <input type="hidden" name="hfcod" value="<%=cod%>">
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
         </div>
-      </div>
-    </section>
-  </div>
-  
-  <!--#include file="footer.asp"-->
+    </form>
+</body>

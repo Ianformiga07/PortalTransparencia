@@ -1,6 +1,11 @@
   <!--#include file="base.asp"-->
   <%
-  if request("Operacao") = 1 then 'CADASTRAR'
+  call abreConexao
+
+  if request("Operacao") = 1 then
+      sql = "SELECT * from cam_servidores where CPF = '"&replace(replace(replace(Request("CPF"),".",""),".",""),"-","")&"'"
+      set rs = conn.execute(sql)
+  elseif request("Operacao") = 2 then 'CADASTRAR'
     call abreConexao
     sql = "INSERT INTO cam_servidores (CPF, NomeCompleto, DataNascimento, Sexo, EstadoCivil, " & _
         "Matricula, RG, OrgaoExpedidor, Escolaridade, CEP, Endereco, Numero, Bairro, " & _
@@ -40,17 +45,8 @@
     call fechaConexao
   END IF
 
-call abreConexao
 
-if Request("CpfVisualizar") <> ""  then
-   
-   sql = "SELECT * from cam_servidores where CPF = '"&replace(replace(replace(Request("CpfVisualizar"),".",""),".",""),"-","")&"'"
-   response.write sql
-   response.end
-   set rs = conn.execute(sql)
 
-end if
-'Session("id_modulo") = rs("id_modulo")
 call fechaConexao
   %>
 
@@ -114,7 +110,8 @@ call fechaConexao
 
 function verificar_cadastro()
 {   
-    document.frmServidor.CpfVisualizar.value = document.frmServidor.CPF.value;
+    alert('ok')
+    document.frmServidor.Operacao.value = 1;
 	document.frmServidor.action = "cad-servidores.asp";
 	document.frmServidor.submit();
 }
@@ -134,30 +131,17 @@ function verificar_cadastro()
 
 <!-- Main content -->
     <section class="content">
-    <form role="form" name="frmServidor" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="CpfVisualizar" id="CpfVisualizar">
-      <div class="row">
-        <div class="col-md-3">
+        <form role="form" name="frmServidor" method="post">
+            <input type="hidden" name="Operacao" id="Operacao">
 
+
+        <div class="row">
+            <div class="col-md-3">
           <!-- Profile Image -->
-          <div class="box box-primary">
-            <div class="box-header with-border text-black-light">
-                <div class="box-title">
-                    Foto de Perfil
-                </div>
-            </div>
-            <div class="box-body" >
-                <img class="profile-user-img img-responsive preview-users-image" src="images/avatar.jpg" style="height: 200px; width: 200px;">
-            </div>
-            <div class="box-footer">
-                <button type="button" class="btn-file btn btn-success pull-right" id="users-image"><span class="fa fa-camera"></span> Foto</button>
-                <input type="file" class="users-image" name="users_imagem" style="display: none"/>
-            </div>
-          </div>
           <!-- /.box -->
         </div>
         <!-- /.col -->
-        <div class="col-md-9">
+        <div class="col-md-12">
           <div class="nav-tabs-custom">
             <!-- general form elements -->
             <div class="box box-primary">
@@ -175,11 +159,11 @@ function verificar_cadastro()
                         <div class="row">
                             <div class="col-md-4">
                                 <label for="CPF">CPF</label>
-                                <input type="text" class="form-control" id="CPF" placeholder="Digite o CPF" oninput="mascaraCPF(this.value)" onblur="if (validarCPF() && this.value) verificar_cadastro()">
+                                <input type="text" class="form-control" id="CPF" name="CPF" placeholder="Digite o CPF" oninput="mascaraCPF(this.value)" onblur="return verificar_cadastro()" value="<%=Request("CPF")%>">
                             </div>
                             <div class="col-md-8">
                                 <label for="nomeCompleto">Nome Completo</label>
-                                <input type="text" class="form-control" id="nomeCompleto" placeholder="Digite o nome completo">
+                                <input type="text" class="form-control" id="nomeCompleto" name="nomeCompleto" placeholder="Digite o nome completo">
                             </div>
                         </div>
                     </div>
@@ -187,23 +171,23 @@ function verificar_cadastro()
                         <div class="row">
                             <div class="col-md-4">
                                 <label for="dataNasc">Data Nascimento</label>
-                                <input type="text" class="form-control" id="dataNasc" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
+                                <input type="text" class="form-control" id="dataNasc" name="dataNasc" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
                             </div>
                             <div class="col-md-4">
                                 <label for="apelido">Sexo</label>
                                 <select class="form-control">
                                     <option> -- Selecionar --</option>
-                                    <option>Masculino</option>
-                                    <option>Feminino</option>
+                                    <option value="1" <% IF sexo = 1 THEN %> selected <% END IF %>>Masculino</option>
+                                    <option value="0" <% IF sexo = 0 THEN %> selected <% END IF %>>Feminino</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
                                 <label for="apelido">Estado Civil</label>
-                                <select class="form-control">
+                                <select class="form-control" id="estadoCivil" name="estadoCivil">
                                     <option> -- Selecionar --</option>
-                                    <option>Solteiro</option>
-                                    <option>Casado</option>
-                                    <option>Divorciado</option>
+                                    <option value="1" <%IF nivelAcesso = 1 THEN%> selected <%END IF%>>Solteiro</option>
+                                    <option value="2" <%IF nivelAcesso = 2 THEN%> selected <%END IF%>>Casado</option>
+                                    <option value="3" <%IF nivelAcesso = 3 THEN%> selected <%END IF%>>Divorciado</option>
                                 </select>
                             </div>
                         </div>
