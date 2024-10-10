@@ -1,14 +1,47 @@
   <!--#include file="base.asp"-->
   <%
   call abreConexao
-
-  if request("Operacao") = 1 then
+  Existe = 0
+  if request("Operacao") = 1 then 'Visualizar'
       sql = "SELECT * from cam_servidores where CPF = '"&replace(replace(replace(Request("CPF"),".",""),".",""),"-","")&"'"
-      set rs = conn.execute(sql)
+      set rsVisu = conn.execute(sql)
+      if not rsVisu.eof then
+        cpf = rsVisu("CPF")
+        nomeCompleto = rsVisu("NomeCompleto")
+        dataNasc = rsVisu("DataNascimento")
+        sexo = rsVisu("Sexo")
+        estadoCivil = rsVisu("EstadoCivil")
+        matricula = rsVisu("matricula")
+        rg = rsVisu("rg")
+        orgaoExpedidor = rsVisu("orgaoExpedidor")
+        Escolaridade = rsVisu("id_Escolaridade")
+        cep = rsVisu("cep")
+        endereco = rsVisu("endereco")
+        numero = rsVisu("numero")
+        bairro = rsVisu("bairro")
+        complemento = rsVisu("complemento")
+        cidade = rsVisu("cidade")
+        uf = rsVisu("uf")
+        celular = rsVisu("celular")
+        email = rsVisu("email")
+        tipoAdmissao = rsVisu("id_TipoAdmissao")
+        cargo = rsVisu("id_Cargo")
+        departamento = rsVisu("id_Departamento")
+        decreto = rsVisu("decreto")
+        dataDecreto = rsVisu("dataDecreto")
+        cargaHoraria = rsVisu("cargaHorariaMensal")
+        dataAdmissao = rsVisu("dataAdmissao")
+        banco = rsVisu("banco")
+        agencia = rsVisu("agencia")
+        conta = rsVisu("conta")
+        tipoConta = rsVisu("tipoConta")
+        operacao = rsVisu("operacao")
+        Existe = 1
+      end if
   elseif request("Operacao") = 2 then 'CADASTRAR'
     call abreConexao
     sql = "INSERT INTO cam_servidores (CPF, NomeCompleto, DataNascimento, Sexo, EstadoCivil, " & _
-        "Matricula, RG, OrgaoExpedidor, Escolaridade, CEP, Endereco, Numero, Bairro, " & _
+        "Matricula, RG, OrgaoExpedidor, id_Escolaridade, CEP, Endereco, Numero, Bairro, " & _
         "Complemento, Cidade, UF, Celular, Email, TipoAdmissao, Cargo, Departamento, " & _
         "Decreto, DataDecreto, CargaHoraria, DataAdmissao, Banco, Agencia, Conta, " & _
         "TipoConta, Operacao) VALUES (" & _
@@ -110,7 +143,7 @@ call fechaConexao
 
 function verificar_cadastro()
 {   
-    alert('ok')
+
     document.frmServidor.Operacao.value = 1;
 	document.frmServidor.action = "cad-servidores.asp";
 	document.frmServidor.submit();
@@ -159,11 +192,11 @@ function verificar_cadastro()
                         <div class="row">
                             <div class="col-md-4">
                                 <label for="CPF">CPF</label>
-                                <input type="text" class="form-control" id="CPF" name="CPF" placeholder="Digite o CPF" oninput="mascaraCPF(this.value)" onblur="return verificar_cadastro()" value="<%=Request("CPF")%>">
+                                <input type="text" class="form-control" id="CPF" name="CPF" placeholder="Digite o CPF" oninput="mascaraCPF(this.value)" onblur="return verificar_cadastro()" value="<%=cpf%>">
                             </div>
                             <div class="col-md-8">
                                 <label for="nomeCompleto">Nome Completo</label>
-                                <input type="text" class="form-control" id="nomeCompleto" name="nomeCompleto" placeholder="Digite o nome completo">
+                                <input type="text" class="form-control" id="nomeCompleto" name="nomeCompleto" value="<%=nomeCompleto%>" placeholder="Digite o nome completo">
                             </div>
                         </div>
                     </div>
@@ -171,23 +204,23 @@ function verificar_cadastro()
                         <div class="row">
                             <div class="col-md-4">
                                 <label for="dataNasc">Data Nascimento</label>
-                                <input type="text" class="form-control" id="dataNasc" name="dataNasc" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
+                                <input type="text" class="form-control" id="dataNasc" name="dataNasc" value="<%=dataNasc%>" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
                             </div>
                             <div class="col-md-4">
-                                <label for="apelido">Sexo</label>
-                                <select class="form-control">
+                                <label for="sexo">Sexo</label>
+                                <select class="form-control" name="sexo" id="sexo">
                                     <option> -- Selecionar --</option>
-                                    <option value="1" <% IF sexo = 1 THEN %> selected <% END IF %>>Masculino</option>
-                                    <option value="0" <% IF sexo = 0 THEN %> selected <% END IF %>>Feminino</option>
+                                    <option value="1" <% IF sexo = true THEN %> selected <% END IF %>>Masculino</option>
+                                    <option value="0" <% IF sexo = false THEN %> selected <% END IF %>>Feminino</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <label for="apelido">Estado Civil</label>
+                                <label for="estadoCivil">Estado Civil</label>
                                 <select class="form-control" id="estadoCivil" name="estadoCivil">
                                     <option> -- Selecionar --</option>
-                                    <option value="1" <%IF nivelAcesso = 1 THEN%> selected <%END IF%>>Solteiro</option>
-                                    <option value="2" <%IF nivelAcesso = 2 THEN%> selected <%END IF%>>Casado</option>
-                                    <option value="3" <%IF nivelAcesso = 3 THEN%> selected <%END IF%>>Divorciado</option>
+                                    <option value="1" <%IF estadoCivil = 1 THEN%> selected <%END IF%>>Solteiro</option>
+                                    <option value="2" <%IF estadoCivil = 2 THEN%> selected <%END IF%>>Casado</option>
+                                    <option value="3" <%IF estadoCivil = 3 THEN%> selected <%END IF%>>Divorciado</option>
                                 </select>
                             </div>
                         </div>
@@ -195,16 +228,16 @@ function verificar_cadastro()
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-2">
-                                <label for="CPF">Matrícula</label>
-                                <input type="text" class="form-control" id="CPF" placeholder="Digite a Matrícula">
+                                <label for="matricula">Matrícula</label>
+                                <input type="text" class="form-control" id="matricula" name="matricula" value="<%=matricula%>" placeholder="Digite a Matrícula">
                             </div>
                             <div class="col-md-3">
-                                <label for="CPF">RG</label>
-                                <input type="text" class="form-control" id="CPF" placeholder="Digite o RG">
+                                <label for="rg">RG</label>
+                                <input type="text" class="form-control" id="rg" name="rg" value="<%=rg%>" placeholder="Digite o RG">
                             </div>
                             <div class="col-md-3">
-                                <label for="nomeCompleto">Orgão Expedidor</label>
-                                <input type="text" class="form-control" id="nomeCompleto" placeholder="Digite o Orgão Expedidor">
+                                <label for="orgaoExpedidor">Orgão Expedidor</label>
+                                <input type="text" class="form-control" id="orgaoExpedidor" name="orgaoExpedidor" value="<%=orgaoExpedidor%>" placeholder="Digite o Orgão Expedidor">
                             </div>
                             <%
                             call abreConexao 
@@ -212,11 +245,11 @@ function verificar_cadastro()
                             set rs2 = conn.execute(sql) 
                             %> 
                             <div class="col-md-4">
-                                <label for="apelido">Escolaridade</label>
-                                <select class="form-control">
+                                <label for="escolaridade">Escolaridade</label>
+                                <select class="form-control" id="escolaridade" name="escolaridade">
                                     <option> -- Selecionar --</option>
                             <%do while not rs2.eof%>
-                                    <option <%if  rtrim(id_escolaridade) = rtrim(rs2("id_escolaridade")) then response.write("selected") end if%> value="<%=rs2("id_escolaridade")%>"><%=rs2("desc_escolaridade")%></option>
+                                    <option <%if  rtrim(Escolaridade) = rtrim(rs2("id_escolaridade")) then response.write("selected") end if%> value="<%=rs2("id_escolaridade")%>"><%=rs2("desc_escolaridade")%></option>
                             <% rs2.movenext 
                             loop 
                             call fechaConexao
@@ -234,53 +267,53 @@ function verificar_cadastro()
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-4">
-                                <label for="apelido">CEP</label>
-                                <input type="text" class="form-control" id="apelido" placeholder="00.000-000">
+                                <label for="cep">CEP</label>
+                                <input type="text" class="form-control" id="cep" name="cep" value="<%=cep%>" placeholder="00.000-000">
                             </div>
                             <div class="col-md-8">
-                                <label for="apelido">Endereço</label>
-                                <input type="text" class="form-control" id="apelido" placeholder="Digite o Endereço">
+                                <label for="endereco">Endereço</label>
+                                <input type="text" class="form-control" id="endereco" name="endereco" value="<%=endereco%>" placeholder="Digite o Endereço">
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-2">
-                                <label for="apelido">Nº.</label>
-                                <input type="text" class="form-control" id="apelido" placeholder="00">
+                                <label for="numero">Nº.</label>
+                                <input type="text" class="form-control" id="numero" name="numero" value="<%=numero%>" placeholder="00">
                             </div>
                             <div class="col-md-5">
-                                <label for="apelido">Bairro</label>
-                                <input type="text" class="form-control" id="apelido" placeholder="Digite o Bairro">
+                                <label for="bairro">Bairro</label>
+                                <input type="text" class="form-control" id="bairro" name="bairro" value="<%=bairro%>" placeholder="Digite o Bairro">
                             </div>
                             <div class="col-md-5">
-                                <label for="apelido">Complemento</label>
-                                <input type="text" class="form-control" id="apelido" placeholder="Digite o Complemento">
+                                <label for="complemento">Complemento</label>
+                                <input type="text" class="form-control" id="complemento" name="complemento" value="<%=complemento%>" placeholder="Digite o Complemento">
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-6">
-                                <label for="for_users_celular">
+                                <label for="cidade">
                                     Cidade
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="glyphicon glyphicon-home"></i>
                                     </span>
-                                    <input type="text" class="form-control" id="for_users_celular" name="users_celular" value="" />
+                                    <input type="text" class="form-control" id="cidade" name="cidade" value="<%=cidade%>" value="" />
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label for="for_users_Email">
+                                <label for="uf">
                                     UF
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="glyphicon glyphicon-map-marker"></i>
                                     </span>
-                                    <input type="email" class="form-control" id="for_users_celular" name="users_celular" value="" />
+                                    <input type="email" class="form-control" id="uf" name="uf" value="<%=uf%>" value="" />
                                 </div>
                             </div>
                         </div>
@@ -288,25 +321,25 @@ function verificar_cadastro()
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-5">
-                                <label for="for_users_celular">
+                                <label for="celular">
                                     Celular
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="glyphicon glyphicon-phone"></i>
                                     </span>
-                                    <input type="text" class="form-control" id="for_users_celular" name="users_celular" data-inputmask='"mask": "(99) 99999-9999"' data-mask/>
+                                    <input type="text" class="form-control" id="celular" name="celular" value="<%=celular%>" data-inputmask='"mask": "(99) 99999-9999"' data-mask/>
                                 </div>
                             </div>
                             <div class="col-md-7">
-                                <label for="for_users_Email">
+                                <label for="email">
                                     Email
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-envelope-o"></i>
                                     </span>
-                                    <input type="email" class="form-control" id="for_users_celular" name="users_celular" value="" />
+                                    <input type="email" class="form-control" id="email" name="email" value="<%=email%>" value="" />
                                 </div>
                             </div>
                         </div>
@@ -326,10 +359,10 @@ function verificar_cadastro()
                             %> 
                             <div class="col-md-4">
                                 <label for="admissao">Tipo de Admissão</label>
-                                <select class="form-control" id="admissao">
+                                <select class="form-control" id="admissao" name="admissao">
                                     <option> -- Selecionar --</option>
                             <%do while not rs3.eof%>
-                                    <option <%if  rtrim(id_tipoAdmissao) = rtrim(rs3("id_tipoAdmissao")) then response.write("selected") end if%> value="<%=rs3("id_tipoAdmissao")%>"><%=rs3("desc_admissao")%></option>
+                                    <option <%if  rtrim(tipoAdmissao) = rtrim(rs3("id_tipoAdmissao")) then response.write("selected") end if%> value="<%=rs3("id_tipoAdmissao")%>"><%=rs3("desc_admissao")%></option>
                             <% rs3.movenext 
                             loop 
                             call fechaConexao
@@ -343,10 +376,10 @@ function verificar_cadastro()
                             %> 
                             <div class="col-md-4">
                                 <label for="cargo">Cargo</label>
-                                <select class="form-control" id="cargo" onchange="mostrarCamposAdicionais(this.value)">
+                                <select class="form-control" id="cargo" name="cargo" onchange="mostrarCamposAdicionais(this.value)">
                                     <option> -- Selecionar --</option>
                             <%do while not rs4.eof%>
-                                    <option <%if  rtrim(id_cargo) = rtrim(rs4("id_cargo")) then response.write("selected") end if%> value="<%=rs4("id_cargo")%>"><%=rs4("desc_cargo")%></option>
+                                    <option <%if  rtrim(cargo) = rtrim(rs4("id_cargo")) then response.write("selected") end if%> value="<%=rs4("id_cargo")%>"><%=rs4("desc_cargo")%></option>
                             <% rs4.movenext 
                             loop 
                             call fechaConexao
@@ -360,10 +393,10 @@ function verificar_cadastro()
                             %> 
                             <div class="col-md-4">
                                 <label for="departamento">Departamento</label>
-                                <select class="form-control" id="departamento">
+                                <select class="form-control" id="departamento" name="departamento">
                                     <option> -- Selecionar --</option>
                             <%do while not rs5.eof%>
-                                    <option <%if  rtrim(id_departamento) = rtrim(rs5("id_departamento")) then response.write("selected") end if%> value="<%=rs5("id_departamento")%>"><%=rs5("desc_departamento")%></option>
+                                    <option <%if  rtrim(departamento) = rtrim(rs5("id_departamento")) then response.write("selected") end if%> value="<%=rs5("id_departamento")%>"><%=rs5("desc_departamento")%></option>
                             <% rs5.movenext 
                             loop 
                             call fechaConexao
@@ -376,20 +409,20 @@ function verificar_cadastro()
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-3">
-                                <label for="apelido">Decreto</label>
-                                <input type="text" class="form-control" id="apelido" >
+                                <label for="decreto">Decreto</label>
+                                <input type="text" class="form-control" id="decreto" name="decreto" value="<%=decreto%>">
                             </div>
                             <div class="col-md-3">
-                                <label for="apelido">Data Decreto</label>
-                                <input type="date" class="form-control" id="apelido" >
+                                <label for="dataDecreto">Data Decreto</label>
+                                <input type="text" class="form-control" id="dataDecreto" name="dataDecreto" value="<%=dataDecreto%>" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
                             </div>
                             <div class="col-md-3">
-                                <label for="apelido">Carga Horária/Mês</label>
-                                <input type="text" class="form-control" id="apelido" placeholder="Digite a carga horária">
+                                <label for="cargaHoraria">Carga Horária/Mês</label>
+                                <input type="text" class="form-control" id="cargaHoraria" name="cargaHoraria" value="<%=cargaHoraria%>" placeholder="Digite a carga horária">
                             </div>
                             <div class="col-md-3">
-                                <label for="apelido">Data de Admissão</label>
-                                <input type="date" class="form-control" id="apelido">
+                                <label for="dataAdmissao">Data de Admissão</label>
+                                <input type="text" class="form-control" id="dataAdmissao" name="dataAdmissao" value="<%=dataAdmissao%>" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
                             </div>
                         </div>
                     </div>
@@ -403,15 +436,15 @@ function verificar_cadastro()
                         <div class="row">
                             <div class="col-md-4">
                                 <label for="banco">Nome Banco</label>
-                                <input type="text" class="form-control" id="banco" name="banco" required>
+                                <input type="text" class="form-control" id="banco" name="banco" value="<%=banco%>" required>
                             </div>
                             <div class="col-md-4">
                                 <label for="agencia">Agência</label>
-                                <input type="text" class="form-control" id="agencia" name="agencia" required>
+                                <input type="text" class="form-control" id="agencia" name="agencia" value="<%=agencia%>" required>
                             </div>
                             <div class="col-md-4">
                                 <label for="conta">Conta</label>
-                                <input type="text" class="form-control" id="conta" name="conta" required>
+                                <input type="text" class="form-control" id="conta" name="conta" value="<%=conta%>" required>
                             </div>
                         </div>
                     </div>
@@ -421,14 +454,14 @@ function verificar_cadastro()
                                 <label for="tipoConta">Tipo de Conta</label>
                                 <select class="form-control" id="tipoConta" name="tipoConta" required>
                                     <option>-- Selecionar --</option>
-                                    <option value="Corrente">Corrente</option>
-                                    <option value="Poupança">Poupança</option>
-                                    <option value="Salário">Salário</option>
+                                    <option value="1" <%IF tipoConta  = 1 THEN%> selected <%END IF%>>Corrente</option>
+                                    <option value="2" <%IF tipoConta  = 2 THEN%> selected <%END IF%>>Poupança</option>
+                                    <option value="3" <%IF tipoConta  = 3 THEN%> selected <%END IF%>>Salário</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
                                 <label for="operacao">Operação (se aplicável)</label>
-                                <input type="text" class="form-control" id="operacao" name="operacao">
+                                <input type="text" class="form-control" id="operacao" name="operacao" value="<%=operacao%>">
                             </div>
                         </div>
                     </div>
@@ -436,7 +469,7 @@ function verificar_cadastro()
 
                 <div class="box-footer">
                     <a href="#" class="btn btn-primary "><i class="fa fa-reply"></i> Voltar</a>
-                    <button type="submit" class="form-btn btn btn-primary pull-right"><i class="fa fa-fw fa-check"></i> Cadastrar</button>
+                    <button type="submit" class="form-btn btn btn-primary pull-right"><i class="fa fa-fw fa-check"></i> <%if Existe = 1 then%>Alterar<%else%>Cadastrar<%end if%></button>
                 </div>
                 </form>
             </div>
