@@ -49,16 +49,19 @@
 
 call fechaConexao
   %>
-
+<script src="js/validacaoServidor.js"></script>
+<script src="js/mascara.js"></script>
 <script>
-    function cadastrar(){
-
-        //alert("oii");
-        var form = document.forms["frmServidor"];
-        form.Operacao.value = 2;
-        form.action = "crud-servidores.asp";
-        form.submit();
+function cadastrar(){
+    if (validacao() == false) {
+        return false;
     }
+    //alert("oii");
+    var form = document.forms["frmServidor"];
+    form.Operacao.value = 2;
+    form.action = "crud-servidores.asp";
+    form.submit();
+}
 
 function alterar(CPF)
 {
@@ -77,6 +80,7 @@ function verificar_cadastro()
 	document.frmServidor.action = "cad-servidores.asp";
 	document.frmServidor.submit();
 }
+
 
 </script>
   <!-- Content Wrapper. Contains page content -->
@@ -120,11 +124,11 @@ function verificar_cadastro()
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-4">
-                                <label for="CPF">CPF</label>
-                                <input type="text" class="form-control" id="CPF" name="CPF" placeholder="Digite o CPF" onblur="return verificar_cadastro()" value="<%=CPF%>">
+                                <label for="CPF">CPF <span style="color: red;">*</span></label>
+                                <input type="text" class="form-control" id="CPF" name="CPF" placeholder="Digite o CPF" onblur="return verificar_cadastro()" value="<% If Len(CPF) = 11 Then Response.Write(Left(CPF, 3) & "." & Mid(CPF, 4, 3) & "." & Mid(CPF, 7, 3) & "-" & Right(CPF, 2)) Else Response.Write(CPF) End If %>" oninput="mascaraCPF(this)">
                             </div>
                             <div class="col-md-8">
-                                <label for="nomeCompleto">Nome Completo</label>
+                                <label for="nomeCompleto">Nome Completo <span style="color: red;">*</span></label>
                                 <input type="text" class="form-control" id="nomeCompleto" name="nomeCompleto" value="<%=nomeCompleto%>" placeholder="Digite o nome completo">
                             </div>
                         </div>
@@ -139,8 +143,8 @@ function verificar_cadastro()
                                 <label for="sexo">Sexo</label>
                                 <select class="form-control" name="sexo" id="sexo">
                                     <option> -- Selecionar --</option>
-                                    <option value="1" <% IF sexo = true THEN %> selected <% END IF %>>Masculino</option>
-                                    <option value="0" <% IF sexo = false THEN %> selected <% END IF %>>Feminino</option>
+                                    <option value="M" <% IF sexo = "M" THEN %> selected <% END IF %>>Masculino</option>
+                                    <option value="F" <% IF sexo = "F" THEN %> selected <% END IF %>>Feminino</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -198,7 +202,7 @@ function verificar_cadastro()
                     <div class="row">
                         <div class="col-md-4">
                             <label for="cep">CEP</label>
-                            <input type="text" class="form-control" id="cep" name="cep" value="<%=cep%>" placeholder="00.000-000" onblur="buscaCep()">
+                            <input type="text" class="form-control" id="cep" name="cep" value="<%=cep%>" placeholder="00.000-000" onblur="buscaCep()" oninput="mascaraCEP(this)">
                         </div>
                         <div class="col-md-8">
                             <label for="endereco">Endereço</label>
@@ -225,7 +229,7 @@ function verificar_cadastro()
                 <div class="form-group">
                     <div class="row">
                         <div class="col-md-6">
-                            <label for="cidade">Cidade</label>
+                            <label for="cidade">Cidade <span style="color: red;">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <i class="glyphicon glyphicon-home"></i>
@@ -234,7 +238,7 @@ function verificar_cadastro()
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label for="uf">UF</label>
+                            <label for="uf">UF <span style="color: red;">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <i class="glyphicon glyphicon-map-marker"></i>
@@ -271,7 +275,13 @@ function verificar_cadastro()
                         document.getElementById('cidade').value = conteudo.localidade;
                         document.getElementById('uf').value = conteudo.uf;
                     } else {
-                        alert("CEP não encontrado.");
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: 'O CEP Informado não foi Encontrado',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
                     }
                 }
                 </script>
@@ -279,7 +289,7 @@ function verificar_cadastro()
                         <div class="row">
                             <div class="col-md-5">
                                 <label for="celular">
-                                    Celular
+                                    Celular <span style="color: red;">*</span>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon">
@@ -290,7 +300,7 @@ function verificar_cadastro()
                             </div>
                             <div class="col-md-7">
                                 <label for="email">
-                                    Email
+                                    Email <span style="color: red;">*</span>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon">
@@ -315,7 +325,7 @@ function verificar_cadastro()
                             set rs3 = conn.execute(sql) 
                             %> 
                             <div class="col-md-4">
-                                <label for="admissao">Tipo de Admissão</label>
+                                <label for="admissao">Tipo de Admissão <span style="color: red;">*</span></label>
                                 <select class="form-control" id="admissao" name="admissao">
                                     <option> -- Selecionar --</option>
                             <%do while not rs3.eof%>
@@ -332,7 +342,7 @@ function verificar_cadastro()
                             set rs4 = conn.execute(sql) 
                             %> 
                             <div class="col-md-4">
-                                <label for="cargo">Cargo</label>
+                                <label for="cargo">Cargo <span style="color: red;">*</span></label>
                                 <select class="form-control" id="cargo" name="cargo" onchange="mostrarCamposAdicionais(this.value)">
                                     <option> -- Selecionar --</option>
                             <%do while not rs4.eof%>
