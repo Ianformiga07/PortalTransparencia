@@ -77,22 +77,50 @@ function cadastrar(){
             <input type="hidden" name="Operacao" id="Operacao">
             <input type="hidden" name="id_servidor" id="id_servidor" value="<%=id_servidor%>">
 
-            <div class="col-md-3">
-                <!-- Profile Image -->
-                <div class="box box-primary">
-                    <div class="box-header with-border text-black-light">
-                        <div class="box-title">
-                            Foto de Perfil
-                        </div>
-                    </div>
-                    <div class="box-body" >
-                        <img class="profile-user-img img-responsive preview-users-image" src="images/avatar.jpg" style="height: 200px; width: 200px;">
-                    </div>
-                    <div class="box-footer">
-                        <a href="uploadFoto.asp" class="btn-file btn btn-success pull-right" id="users-image"><span class="fa fa-camera"></span> Foto</a>
-                    </div>
-                </div>
+<div class="col-md-3">
+    <!-- Profile Image -->
+    <div class="box box-primary">
+        <div class="box-header with-border text-black-light">
+            <div class="box-title">
+                Foto de Perfil
             </div>
+        </div>
+        <div class="box-body">
+            <img class="profile-user-img img-responsive preview-users-image" src="images/avatar.jpg" style="height: 200px; width: 200px;">
+        </div>
+        <div class="box-footer">
+            <button class="btn-file btn btn-success pull-right" id="users-image" data-toggle="modal" data-target="#uploadPhotoModal">
+                <span class="fa fa-camera"></span> Foto
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="uploadPhotoModal" tabindex="-1" role="dialog" aria-labelledby="uploadPhotoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadPhotoModalLabel">Carregar Foto de Perfil</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadPhotoForm" action="uploadFoto.asp" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="fileInput">Escolha uma imagem:</label>
+                        <input type="file" class="form-control" id="fileInput" name="fileInput" accept="image/*" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="submit" form="uploadPhotoForm" class="btn btn-primary">Carregar</button>
+            </div>
+        </div>
+    </div>
+</div>
             <!-- /.col -->
             <div class="col-md-9">
                 <div class="nav-tabs-custom">
