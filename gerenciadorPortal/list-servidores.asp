@@ -8,13 +8,13 @@ set rs_admin = conn.execute(sql)
 if Request("Operacao") = 3 then 'Desativar
     sql = "UPDATE cam_servidores SET statusServidor = 0 WHERE CPF = '" & Request("CPF") & "'"
     conn.execute(sql)
-    Response.Redirect "list-servidores.asp?Resp=2" ' Mensagem de sucesso
+    Response.Redirect "list-servidores.asp?Resp=4" ' Mensagem de sucesso
 end if
 
 if Request("Operacao") = 2 then ' Ativar
     sql = "UPDATE cam_servidores SET statusServidor = 1 WHERE CPF = '" & Request("CPF") & "'"
     conn.execute(sql)
-    Response.Redirect "list-servidores.asp?Resp=1" ' Mensagem de sucesso
+    Response.Redirect "list-servidores.asp?Resp=3" ' Mensagem de sucesso
 end if
 %>
 
@@ -209,7 +209,7 @@ function confirmToggle(CPF, isChecked) {
   window.onload = function() {
     var resp = document.getElementById('hiddenResp').value;
 
-    if (resp == "1") {
+    if (resp == "3") {
       Swal.fire({
         icon: 'success',
         title: 'Servidor ativado com sucesso!',
@@ -219,10 +219,30 @@ function confirmToggle(CPF, isChecked) {
         toast: false,
         width: '30rem'
       });
-    } else if (resp == "2") {
+    } else if (resp == "4") {
       Swal.fire({
         icon: 'success',
         title: 'Servidor desativado com sucesso!',
+        showConfirmButton: false,
+        timer: 3000,
+        position: 'top-end',
+        toast: false,
+        width: '30rem'
+      });
+    } else if (resp == "1") {
+      Swal.fire({
+        icon: 'success',
+        title: 'Servidor Cadastrado com sucesso!',
+        showConfirmButton: false,
+        timer: 3000,
+        position: 'top-end',
+        toast: false,
+        width: '30rem'
+      });
+    } else if (resp == "2") {
+      Swal.fire({
+        icon: 'success',
+        title: 'Servidor Alterado com sucesso!',
         showConfirmButton: false,
         timer: 3000,
         position: 'top-end',

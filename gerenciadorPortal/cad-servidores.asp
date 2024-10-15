@@ -81,6 +81,34 @@ function verificar_cadastro()
 	document.frmServidor.submit();
 }
 
+function verificarCPF() {
+    var cpf = document.getElementById("CPF").value;
+    
+    // Valida o CPF formatado
+    if (!validarCPF(cpf)) {
+        Swal.fire({
+            title: 'CPF inválido!',
+            text: 'Por favor, insira um CPF válido.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById("CPF").value = '';  // Limpar o campo CPF
+            }
+        });
+
+        return false; // CPF inválido
+    }
+    
+    return true; // CPF válido
+}
+
+// Função que executa a validação do CPF e só chama a função verificar_cadastro se o CPF for válido
+function validarEEnviar() {
+    if (verificarCPF()) {
+        verificar_cadastro(); // Chama a função de cadastro apenas se o CPF for válido
+    }
+}
 
 </script>
   <!-- Content Wrapper. Contains page content -->
@@ -100,7 +128,7 @@ function verificar_cadastro()
     <section class="content">
         <form role="form" name="frmServidor" method="post">
             <input type="hidden" name="Operacao" id="Operacao">
-                    <input type="hidden" name="CPFVisu" id="CPFVisu">        
+            <input type="hidden" name="CPFVisu" id="CPFVisu">        
         <div class="row">
             <div class="col-md-3">
           <!-- Profile Image -->
@@ -125,7 +153,7 @@ function verificar_cadastro()
                         <div class="row">
                             <div class="col-md-4">
                                 <label for="CPF">CPF <span style="color: red;">*</span></label>
-                                <input type="text" class="form-control" id="CPF" name="CPF" placeholder="Digite o CPF" onblur="return verificar_cadastro()" value="<% If Len(CPF) = 11 Then Response.Write(Left(CPF, 3) & "." & Mid(CPF, 4, 3) & "." & Mid(CPF, 7, 3) & "-" & Right(CPF, 2)) Else Response.Write(CPF) End If %>" oninput="mascaraCPF(this)">
+                                <input type="text" class="form-control" id="CPF" name="CPF" placeholder="Digite o CPF" onblur="validarEEnviar();" value="<% If Len(CPF) = 11 Then Response.Write(Left(CPF, 3) & "." & Mid(CPF, 4, 3) & "." & Mid(CPF, 7, 3) & "-" & Right(CPF, 2)) Else Response.Write(CPF) End If %>" oninput="mascaraCPF(this)">
                             </div>
                             <div class="col-md-8">
                                 <label for="nomeCompleto">Nome Completo <span style="color: red;">*</span></label>
@@ -142,7 +170,7 @@ function verificar_cadastro()
                             <div class="col-md-4">
                                 <label for="sexo">Sexo</label>
                                 <select class="form-control" name="sexo" id="sexo">
-                                    <option> -- Selecionar --</option>
+                                    <option value=""> -- Selecionar --</option>
                                     <option value="M" <% IF sexo = "M" THEN %> selected <% END IF %>>Masculino</option>
                                     <option value="F" <% IF sexo = "F" THEN %> selected <% END IF %>>Feminino</option>
                                 </select>
@@ -150,7 +178,7 @@ function verificar_cadastro()
                             <div class="col-md-4">
                                 <label for="estadoCivil">Estado Civil</label>
                                 <select class="form-control" id="estadoCivil" name="estadoCivil">
-                                    <option> -- Selecionar --</option>
+                                    <option value=""> -- Selecionar --</option>
                                     <option value="1" <%IF estadoCivil = 1 THEN%> selected <%END IF%>>Solteiro</option>
                                     <option value="2" <%IF estadoCivil = 2 THEN%> selected <%END IF%>>Casado</option>
                                     <option value="3" <%IF estadoCivil = 3 THEN%> selected <%END IF%>>Divorciado</option>
@@ -327,7 +355,7 @@ function verificar_cadastro()
                             <div class="col-md-4">
                                 <label for="admissao">Tipo de Admissão <span style="color: red;">*</span></label>
                                 <select class="form-control" id="admissao" name="admissao">
-                                    <option> -- Selecionar --</option>
+                                    <option value=""> -- Selecionar --</option>
                             <%do while not rs3.eof%>
                                     <option <%if  rtrim(tipoAdmissao) = rtrim(rs3("id_tipoAdmissao")) then response.write("selected") end if%> value="<%=rs3("id_tipoAdmissao")%>"><%=rs3("desc_admissao")%></option>
                             <% rs3.movenext 
@@ -344,7 +372,7 @@ function verificar_cadastro()
                             <div class="col-md-4">
                                 <label for="cargo">Cargo <span style="color: red;">*</span></label>
                                 <select class="form-control" id="cargo" name="cargo" onchange="mostrarCamposAdicionais(this.value)">
-                                    <option> -- Selecionar --</option>
+                                    <option value=""> -- Selecionar --</option>
                             <%do while not rs4.eof%>
                                     <option <%if  rtrim(cargo) = rtrim(rs4("id_cargo")) then response.write("selected") end if%> value="<%=rs4("id_cargo")%>"><%=rs4("desc_cargo")%></option>
                             <% rs4.movenext 
@@ -361,7 +389,7 @@ function verificar_cadastro()
                             <div class="col-md-4">
                                 <label for="departamento">Departamento</label>
                                 <select class="form-control" id="departamento" name="departamento">
-                                    <option> -- Selecionar --</option>
+                                    <option value=""> -- Selecionar --</option>
                             <%do while not rs5.eof%>
                                     <option <%if  rtrim(departamento) = rtrim(rs5("id_departamento")) then response.write("selected") end if%> value="<%=rs5("id_departamento")%>"><%=rs5("desc_departamento")%></option>
                             <% rs5.movenext 
@@ -420,7 +448,7 @@ function verificar_cadastro()
                             <div class="col-md-4">
                                 <label for="tipoConta">Tipo de Conta</label>
                                 <select class="form-control" id="tipoConta" name="tipoConta" required>
-                                    <option>-- Selecionar --</option>
+                                    <option value="">-- Selecionar --</option>
                                     <option value="1" <%IF tipoConta  = 1 THEN%> selected <%END IF%>>Corrente</option>
                                     <option value="2" <%IF tipoConta  = 2 THEN%> selected <%END IF%>>Poupança</option>
                                     <option value="3" <%IF tipoConta  = 3 THEN%> selected <%END IF%>>Salário</option>

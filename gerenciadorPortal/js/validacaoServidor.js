@@ -22,6 +22,8 @@ function validacao(){
     var decreto = document.getElementById("decreto").value;
     var dataDecreto = document.getElementById("dataDecreto").value;
     var cargaHoraria = document.getElementById("cargaHoraria").value;
+    var dataAdmissao = document.getElementById("dataAdmissao").value;
+    var banco = document.getElementById("banco").value;
     var agencia = document.getElementById("agencia").value;
     var conta = document.getElementById("conta").value;
     var tipoConta = document.getElementById("tipoConta").value;
@@ -62,30 +64,29 @@ function validacao(){
         return false; 
     }
 
-    if (sexo === "") {
+    if (sexo === "" || sexo === "-- Selecionar --") {
         Swal.fire({
             position: 'top-end',
             icon: 'error',
-            title: 'Por favor, selecione o campo Sexo.',
+            title: 'Por favor, selecione o Sexo.',
             showConfirmButton: false,
             timer: 2000
         });
         document.getElementById("sexo").focus();
-        return false; 
+        return false;
     }
 
-    if (estadoCivil === "") {
+    if (estadoCivil === "" || estadoCivil === " -- Selecionar --") {
         Swal.fire({
             position: 'top-end',
             icon: 'error',
-            title: 'Por favor, preencha o campo Estado Civil.',
+            title: 'Por favor, selecione o Estado Civil.',
             showConfirmButton: false,
             timer: 2000
         });
         document.getElementById("estadoCivil").focus();
         return false; 
     }
-
     if (matricula === "") {
         Swal.fire({
             position: 'top-end',
@@ -218,11 +219,11 @@ function validacao(){
         return false; 
     }
 
-    if (admissao === "") {
+    if (admissao === "" || admissao === " -- Selecionar --") {
         Swal.fire({
             position: 'top-end',
             icon: 'error',
-            title: 'Por favor, preencha o campo Data de Admissão.',
+            title: 'Por favor, selecione o Tipo de Admissão.',
             showConfirmButton: false,
             timer: 2000
         });
@@ -290,6 +291,30 @@ function validacao(){
         return false; 
     }
 
+    if (dataAdmissao === "") {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'error',
+            title: 'Por favor, preencha o campo Data Admissão.',
+            showConfirmButton: false,
+            timer: 2000
+        });
+        document.getElementById("dataAdmissao").focus();
+        return false; 
+    }
+
+    if (banco === "") {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'error',
+            title: 'Por favor, preencha o campo banco.',
+            showConfirmButton: false,
+            timer: 2000
+        });
+        document.getElementById("banco").focus();
+        return false; 
+    }
+
     if (agencia === "") {
         Swal.fire({
             position: 'top-end',
@@ -325,5 +350,38 @@ function validacao(){
         document.getElementById("tipoConta").focus();
         return false; 
     }
+    return true;
+}
+
+function validarCPF(cpf) {
+    cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
+
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) {
+        return false; // CPF tem que ter 11 dígitos e não pode ser todos iguais
+    }
+
+    let soma;
+    let resto;
+    soma = 0;
+
+    for (let i = 1; i <= 9; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    }
+
+    resto = (soma * 10) % 11;
+
+    if ((resto === 10) || (resto === 11)) resto = 0;
+    if (resto !== parseInt(cpf.substring(9, 10))) return false;
+
+    soma = 0;
+    for (let i = 1; i <= 10; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+
+    resto = (soma * 10) % 11;
+
+    if ((resto === 10) || (resto === 11)) resto = 0;
+    if (resto !== parseInt(cpf.substring(10, 11))) return false;
+
     return true;
 }
