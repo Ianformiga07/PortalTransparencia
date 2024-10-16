@@ -12,9 +12,11 @@ end if
 
 <%
 call abreConexao
-sql = "SELECT id_servidor, CPF, LEFT(NomeCompleto, CHARINDEX(' ', NomeCompleto + ' ') - 1) AS PrimeiroNome, RIGHT(NomeCompleto, CHARINDEX(' ', REVERSE(NomeCompleto) + ' ') - 1) AS UltimoNome, statusServidor FROM  cam_servidores where CPF = '"&session("idUsu")&"'"
+sql = "SELECT id_servidor, CPF, LEFT(NomeCompleto, CHARINDEX(' ', NomeCompleto + ' ') - 1) AS PrimeiroNome, RIGHT(NomeCompleto, CHARINDEX(' ', REVERSE(NomeCompleto) + ' ') - 1) AS UltimoNome, statusServidor, FotoPerfil, nivelAcesso FROM  cam_servidores where CPF = '"&session("idUsu")&"'"
 set rs_Serv = conn.execute(sql)
 if not rs_Serv.eof then
+nivelAcesso = rs_Serv("nivelAcesso")
+FotoPerfil = rs_Serv("FotoPerfil")
 PrimeiroNome = rs_Serv("PrimeiroNome")
 UltimoNome = rs_Serv("UltimoNome")
 end if
@@ -134,7 +136,11 @@ call fechaConexao
       <!-- Sidebar user panel -->
       <div class="user-panel">
         <div class="pull-left image">
-          <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+          <%if FotoPerfil = "" then%>
+          <img src="avatar.jpg" class="img-circle" alt="User Image">
+          <%else%>
+          <img src=".\<%= FotoPerfil %>" class="img-circle" alt="User Image">
+          <%end if%>
         </div>
         <div class="pull-left info">
           <p><%=PrimeiroNome%>&nbsp<%=UltimoNome%></p>
@@ -278,6 +284,7 @@ call fechaConexao
               <li><a href="list-tabelaDiarias.asp"><i class="fa fa-credit-card"></i> Valores de Diárias</a></li> <!-- Ícone representando um cartão de crédito -->
             </ul>
           </li>
+        <%if nivelAcesso = 1 or nivelAcesso = 2 then%>
           <!-- Seção do Administrador -->
           <li class="header">Administrador</li>
           <li class="treeview">
@@ -292,6 +299,9 @@ call fechaConexao
               <li><a href="sel-admin.asp"><i class="fa fa-user-plus"></i> <span>Novo</span></a></li> <!-- Ícone de adicionar usuário -->
             </ul>
           </li>
+        <%else%>
+        
+        <%end if%>
       </ul>
     </section>
     <!-- /.sidebar -->

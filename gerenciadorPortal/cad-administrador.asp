@@ -16,6 +16,7 @@ if idServidor <> "" then
         nivelAcesso = rs_admin("NivelAcesso") ' Exemplo de campo, ajuste conforme necessário
         id_permissao = rs_admin("id_permissao")
         senha = rs_admin("senha")
+        FotoPerfil = rs_admin("FotoPerfil")
     end if
     rs_admin.close
 else
@@ -26,6 +27,9 @@ else
     sexo = ""
     email = ""
     nivelAcesso = ""
+    id_permissao = ""
+    senha = ""
+    FotoPerfil = ""
 end if
 %>
 <head>
@@ -47,7 +51,33 @@ end if
         });
     });
 
+function validarSenha() {
+    var senha = document.getElementById("senha").value;
+    var confirmarSenha = document.getElementById("confirmarSenha").value;
+
+    // Verificar se as senhas são diferentes
+    if (senha !== confirmarSenha) {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'error',
+            title: 'As senhas não coincidem',
+            showConfirmButton: false,
+            timer: 2000
+        });
+        document.getElementById("senha").focus(); // Focar no campo senha para correção
+        return false; // Interromper a submissão se as senhas forem diferentes
+    }
+
+    // Se as senhas forem iguais, permitir a continuação
+    return true;
+}
+
+
 function cadastrar(){
+
+    if (validarSenha() == false) {
+        return false;
+    }
 
     var form = document.forms["frmAdmin"];
     form.Operacao.value = 2;
@@ -73,54 +103,54 @@ function cadastrar(){
     <!-- Main content -->
     <section class="content">
         <div class="row">
+            <div class="col-md-3">
+                <!-- Profile Image -->
+                <div class="box box-primary">
+                    <div class="box-header with-border text-black-light">
+                        <div class="box-title">
+                            Foto de Perfil
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <img class="profile-user-img img-responsive preview-users-image" src=".\<%= FotoPerfil %>" style="height: 200px; width: 200px;">
+                    </div>
+                    <div class="box-footer">
+                        <button class="btn-file btn btn-success pull-right" id="users-image" data-toggle="modal" data-target="#uploadPhotoModal">
+                            <span class="fa fa-camera"></span> Foto
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="uploadPhotoModal" tabindex="-1" role="dialog" aria-labelledby="uploadPhotoModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="uploadPhotoModalLabel">Carregar Foto de Perfil</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="uploadPhotoForm" action="uploadFoto.asp?id_servidor=<%= id_servidor %>&Operacao=4" method="post" enctype="multipart/form-data" onsubmit="updateProfileImage('images/<%= id_servidor %>.jpg')">
+                                <div class="form-group">
+                                    <label for="fileInput">Escolha uma imagem:</label>
+                                    <input type="file" class="form-control" id="UpFoto" name="UpFoto" accept="image/*" required>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                            <button type="submit" form="uploadPhotoForm" class="btn btn-primary">Carregar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         <form role="form" name="frmAdmin" method="post">
             <input type="hidden" name="Operacao" id="Operacao">
             <input type="hidden" name="id_servidor" id="id_servidor" value="<%=id_servidor%>">
-
-<div class="col-md-3">
-    <!-- Profile Image -->
-    <div class="box box-primary">
-        <div class="box-header with-border text-black-light">
-            <div class="box-title">
-                Foto de Perfil
-            </div>
-        </div>
-        <div class="box-body">
-            <img class="profile-user-img img-responsive preview-users-image" src="images/avatar.jpg" style="height: 200px; width: 200px;">
-        </div>
-        <div class="box-footer">
-            <button class="btn-file btn btn-success pull-right" id="users-image" data-toggle="modal" data-target="#uploadPhotoModal">
-                <span class="fa fa-camera"></span> Foto
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="uploadPhotoModal" tabindex="-1" role="dialog" aria-labelledby="uploadPhotoModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="uploadPhotoModalLabel">Carregar Foto de Perfil</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="uploadPhotoForm" action="uploadFoto.asp" method="post" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="fileInput">Escolha uma imagem:</label>
-                        <input type="file" class="form-control" id="fileInput" name="fileInput" accept="image/*" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="submit" form="uploadPhotoForm" class="btn btn-primary">Carregar</button>
-            </div>
-        </div>
-    </div>
-</div>
             <!-- /.col -->
             <div class="col-md-9">
                 <div class="nav-tabs-custom">
@@ -175,8 +205,12 @@ function cadastrar(){
                                             <label for="nivelAcesso">Nível de Acesso</label>
                                             <select class="form-control" id="nivelAcesso" name="nivelAcesso">
                                                 <option> -- Selecionar --</option>
+                                                <%if cpf = "04426330173" then%>
+                                                <option value="1" <%IF nivelAcesso = 1 THEN%> selected <%END IF%>>Administrador Geral</option>
+                                                <%else%>
                                                 <option value="2" <%IF nivelAcesso = 2 THEN%> selected <%END IF%>>Administrador</option>
                                                 <option value="3" <%IF nivelAcesso = 3 THEN%> selected <%END IF%>>Editor</option>
+                                                <%end if%>
                                             </select>
                                         </div>
                                         
@@ -249,7 +283,7 @@ function cadastrar(){
                                                 do while not rs.eof
                                                     i = i + 1
 
-                                                    sql2 = "Select count(*) as Existe from cam_permissaoAcesso WHERE  id_Servidor = '" & id_servidor & "' and id_permissao = '"&rs("id_permissao")&"'"
+                                                    sql2 = "Select count(*) as Existe from cam_permissaoAcesso WHERE  id_servidor = '" & id_servidor & "' and id_permissao = '"&rs("id_permissao")&"'"
                                                     set rs1 = conn.execute(sql2)
                                                     
                                             %>
@@ -268,7 +302,7 @@ function cadastrar(){
                             </div>
                             <div class="box-footer">
                                 <a href="javascript:history.back()" class="btn btn-primary "><i class="fa fa-reply"></i> Voltar</a>
-                                <button type="submit" class="btn btn-primary pull-right" onClick="return cadastrar()"><i class="fa fa-check"></i> Cadastrar</button>
+                                <button type="submit" class="btn btn-primary pull-right" onClick="return cadastrar()"><i class="fa fa-check"></i> Atualizar</button>
                             </div>
                     </div>
                     <!-- /.box -->
@@ -279,4 +313,42 @@ function cadastrar(){
     </section>
     <!-- /.content -->
 </div>
+
+<!-- Campo hidden para o valor de Resp -->
+<input type="hidden" id="hiddenResp" value="<%= Request("Resp") %>">
+
+<!-- SweetAlert e script para limpar URL -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  window.onload = function() {
+    var resp = document.getElementById('hiddenResp').value;
+
+if (resp == "1") {
+      Swal.fire({
+        icon: 'success',
+        title: 'Servidor Cadastrado com sucesso!',
+        showConfirmButton: false,
+        timer: 3000,
+        position: 'top-end',
+        toast: false,
+        width: '30rem'
+      });
+    }
+
+// Limpar a URL removendo o parâmetro 'Resp'
+if (resp) {
+  const url = new URL(window.location);
+  url.searchParams.delete('Resp');
+
+  // Verificar se ainda há parâmetros na URL após a remoção de 'Resp'
+  if (url.searchParams.toString() === '') {
+    // Se não houver mais parâmetros, substitua a URL apenas pelo pathname
+    window.history.replaceState(null, null, url.pathname);
+  } else {
+    // Caso contrário, substitua a URL com os parâmetros restantes
+    window.history.replaceState(null, null, url);
+  }
+}
+  };
+</script>
 <!--#include file="footer.asp"-->
