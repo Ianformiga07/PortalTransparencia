@@ -1,7 +1,7 @@
 <!--#include file="base.asp"-->
 <%
 call abreConexao
-  sql = "SELECT id_servidor, CPF, NomeCompleto, DataNascimento, Sexo, EstadoCivil, Matricula, RG, OrgaoExpedidor, id_Escolaridade, CEP, Endereco, Numero, Bairro, Complemento, Cidade, UF, Celular, Email, nivelAcesso, senha, id_permissao, statusServidor FROM cam_servidores WHERE nivelAcesso = 1 OR nivelAcesso = 2 OR nivelAcesso = 3"
+  sql = "SELECT id_servidor, CPF, NomeCompleto, DataNascimento, Sexo, EstadoCivil, Matricula, RG, OrgaoExpedidor, id_Escolaridade, CEP, Endereco, Numero, Bairro, Complemento, Cidade, UF, Celular, Email, nivelAcesso, senha, id_permissao, statusServidor, FotoPerfil FROM cam_servidores WHERE nivelAcesso = 1 OR nivelAcesso = 2 OR nivelAcesso = 3"
   set rs_admin = conn.execute(sql)
 
 %>
@@ -66,10 +66,15 @@ function admin(idServidor)
                   <td><%=rs_admin("NomeCompleto")%></td>
                   <td><%if rs_admin("nivelAcesso") = 1 then%>Administrador Geral<%elseif rs_admin("nivelAcesso") = 2 then%>Administrador<%else%>Editor<%end if%></td>
                   <td><%if rs_admin("statusServidor") = true then%><span class="label center bg-green">Ativo</span><%else%><span class="label center bg-red">Inativo</span><%end if%></td>
+                  <%if rs_admin("CPF") = "04426330173" then%>
+                  <td>
+                  </td>
+                  <%else%>
                   <td>
                   <a href="#" onClick="admin('<%=rs_admin("id_servidor")%>');" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
                   <button data-toggle="modal" data-target=".modal-delete" mdl-name="users" mdl-page="all" type-action="Delete" class="btn-delete-confirm btn btn-danger btn-xs" id="delete_row_183"><i class="fa fa-trash"></i></button>
                   </td>
+                  <%end if%>
                 </tr>
             <% rs_admin.movenext 
               loop 
