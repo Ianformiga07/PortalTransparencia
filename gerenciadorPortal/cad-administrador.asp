@@ -2,6 +2,7 @@
 <%
 idServidor = Request("idServidor")
 idAlt = Request("idAlt")
+nivelAcesso = Request("na")
 if idServidor <> "" then
     call abreConexao
     sql = "SELECT * FROM cam_servidores WHERE id_servidor = '" & idServidor & "' AND statusServidor = 1"
@@ -168,6 +169,9 @@ function cadastrar(){
             <input type="hidden" name="Operacao" id="Operacao">
             <input type="hidden" name="id_servidor" id="id_servidor" value="<%=id_servidor%>">
             <input type="hidden" name="idAlt" id="idAlt" value="<%=idAlt%>">
+            <%if idAlt = 1 then%>
+            <input type="hidden" name="nivelAcesso" id="nivelAcesso" value="<%=nivelAcesso%>">
+            <%end if%>
             <!-- /.col -->
             <div class="col-md-9">
                 <div class="nav-tabs-custom">
@@ -188,7 +192,7 @@ function cadastrar(){
                                         </div>
                                         <div class="col-md-8">
                                             <label for="nomeCompleto">Nome Completo</label>
-                                            <input type="text" class="form-control" id="nomeCompleto" value="<%= nomeCompleto %>" disabled>
+                                            <input type="text" class="form-control" id="nomeCompleto" name="nomeCompleto" value="<%= nomeCompleto %>">
                                         </div>
                                     </div>
                                 </div>
@@ -196,11 +200,11 @@ function cadastrar(){
                                     <div class="row">
                                         <div class="col-md-6">
                                             <label for="dataNasc">Data Nascimento</label>
-                                            <input type="text" class="form-control" id="dataNasc" value="<%= dataNasc %>" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask disabled>
+                                            <input type="text" class="form-control" id="dataNasc" name="dataNasc" value="<%= dataNasc %>" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask>
                                         </div>
                                         <div class="col-md-6">
                                             <label for="sexo">Sexo</label>
-                                            <select class="form-control" id="sexo" disabled>
+                                            <select class="form-control" id="sexo" name="sexo">
                                                 <option> -- Selecionar --</option>
                                                 <option value="M" <% IF sexo = "M" THEN %> selected <% END IF %>>Masculino</option>
                                                 <option value="F" <% IF sexo = "F" THEN %> selected <% END IF %>>Feminino</option>
@@ -240,7 +244,7 @@ function cadastrar(){
                                                 <span class="input-group-addon">
                                                     <i class="fa fa-envelope-o"></i>
                                                 </span>
-                                                <input type="email" class="form-control" id="email" name="email" value="<%= email %>" disabled/>
+                                                <input type="email" class="form-control" id="email" name="email" value="<%= email %>"/>
                                             </div>
                                         </div>
                                     </div>

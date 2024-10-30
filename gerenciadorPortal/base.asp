@@ -145,7 +145,7 @@ call fechaConexao
         </div>
         <div class="pull-left info">
           <p><%=PrimeiroNome%>&nbsp<%=UltimoNome%></p>
-          <a href="cad-administrador.asp?idServidor=<%=id_servidor%>&idAlt=1"><i class="fa fa-pencil text-gray"></i> Minha Conta</a>
+          <a href="cad-administrador.asp?idServidor=<%=id_servidor%>&idAlt=1&na=<%=nivelAcesso%>"><i class="fa fa-pencil text-gray"></i> Minha Conta</a>
         </div>
       </div>
       <!-- sidebar menu: : style can be found in sidebar.less -->
