@@ -13,19 +13,6 @@
         input.value = value;
     }
 
-    function formatArea() {
-        var areaInput = document.getElementById('area');
-        var value = areaInput.value.trim();
-
-        // Verifica se o valor já contém 'km²'
-        if (value !== "" && !value.endsWith("km²")) {
-            // Remove qualquer "km²" anterior para evitar repetição
-            value = value.replace(/km²/g, "").trim();
-
-            // Adiciona "km²" no final
-            areaInput.value = value + " km²";
-        }
-    }
 
       function cadastrar(){
           var form = document.forms["frmHistoria"];
@@ -108,7 +95,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="area">Área (km²)</label>
-                                <input type="text" class="form-control" id="area" name="area" onblur="formatArea()">
+                                <input type="text" class="form-control" id="area" name="area">
                             </div>
                         </div>
                     </div>
