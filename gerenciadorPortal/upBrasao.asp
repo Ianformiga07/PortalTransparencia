@@ -79,7 +79,7 @@ If Form.State = 0 Then
     End If
 
     ' Redirecionar após a operação
-    Response.Redirect("cad-historia.asp?Resp=5&id_historia=" & id_historia)
+    Response.Redirect("cad-historia.asp?Resp=4&id_historia=" & id_historia)
     
     Call fechaConexao
 End If

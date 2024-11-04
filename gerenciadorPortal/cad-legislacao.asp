@@ -1,4 +1,15 @@
 <!--#include file="base.asp"-->
+
+<script>
+  function cadastrar() {
+
+      var form = document.forms["frmCadLeg"];
+      form.Operacao.value = "2";
+      form.enctype = "multipart/form-data";
+      form.action = "crud-legislacao.asp";
+      form.submit();
+  }
+</script>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <!--- Content Header--->
@@ -20,67 +31,70 @@
         <div class="box box-primary">
           <!-- /.box-header -->
           <!-- form start -->
-          <form role="form" action="cadastrar_diario_oficial.asp" method="post" enctype="multipart/form-data">
+          <form role="form" name="frmCadLeg" method="post">
+              <input type="hidden" name="Operacao" id="Operacao">
+              <input type="hidden" name="id_legislacao" id="id_legislacao" value="<%=id_legislacao%>">
             <div class="box-body">
                 <div class="form-group">
+                    <%
+                    call abreConexao 
+                    sql = "SELECT * FROM cam_categoriaLeg ORDER BY id_categoriaLeg"
+                    set rs_catLeg = conn.execute(sql) 
+                    %> 
                     <div class="row">
                         <div class="col-md-6">
-                            <label for="status">Categoria</label>
-                            <select class="form-control" id="status" name="status" required>
+                            <label for="CatLegislacao">Categoria</label>
+                            <select class="form-control" id="CatLegislacao" name="CatLegislacao" required>
                                 <option value="">-- Selecionar --</option>
-                                <option value="">Projetos de Lei</option>
-                                <option value="">Resoluções</option>
-                                <option value="">Decretos</option>
-                                <option value="">Portarias</option>
-                                <option value="">Ofícios</option>
-                                <option value="">Leis Municipais</option>
-                                <option value="">Lei Orgânica</option>
-                                <option value="">Requerimentos</option>
-                                <option value="">Atas de Sessões</option>
-                                <option value="">Pauta das Sessões</option>
+                                <option value=""></option>
+                            <%do while not rs_catLeg.eof%>
+                                <option <%if  rtrim(departamento) = rtrim(rs_catLeg("id_categoriaLeg")) then response.write("selected") end if%> value="<%=rs_catLeg("id_categoriaLeg")%>"><%=rs_catLeg("descricao")%></option>
+                            <% rs_catLeg.movenext 
+                            loop 
+                            call fechaConexao
+                            %>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="dataPublicacao">Data da Publicação</label>
-                            <input type="date" class="form-control" id="dataPublicacao" name="dataPublicacao" required>
+                            <label for="arquivoLeg">Arquivo PDF</label>
+                            <input type="file" class="form-control" id="arquivoLeg" name="arquivoLeg" accept=".pdf" required>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="row">
                         <div class="col-md-12">
-                            <label for="titulo">Descricao</label>
-                            <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Digite o título" required>
+                            <label for="descricao">Descricao</label>
+                            <input type="text" class="form-control" id="descricao" name="descricao" placeholder="Digite o título" required>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="row">
-                        <div class="col-md-4">
-                            <label for="arquivo">Arquivo PDF</label>
-                            <input type="file" class="form-control" id="arquivo" name="arquivo" accept=".pdf" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="status">Autor</label>
-                            <select class="form-control" id="status" name="status" required>
+                    <%
+                    call abreConexao 
+                    sql = "SELECT  id_servidor, CPF, NomeCompleto, id_Cargo FROM cam_servidores WHERE  (id_Cargo = 15)"
+                    set rs_verAutor = conn.execute(sql) 
+                    %> 
+                        <div class="col-md-6">
+                            <label for="verAutor">Autor</label>
+                            <select class="form-control" id="verAutor" name="verAutor" required>
                                 <option value="">-- Selecionar --</option>
-                                <option value="">Zélu</option>
-                                <option value="">Cicinho</option>
-                                <option value="">Irmao Livan</option>
-                                <option value="">Portarias</option>
-                                <option value="">Ofícios</option>
-                                <option value="">Leis Municipais</option>
-                                <option value="">Lei Orgânica</option>
-                                <option value="">Requerimentos</option>
-                                <option value="">Atas de Sessões</option>
-                                <option value="">Pauta das Sessões</option>
+                                <option value=""></option>
+                            <%do while not rs_verAutor.eof%>
+                                <option <%if  rtrim(departamento) = rtrim(rs_verAutor("id_servidor")) then response.write("selected") end if%> value="<%=rs_verAutor("id_servidor")%>"><%=rs_verAutor("NomeCompleto")%></option>
+                            <% rs_verAutor.movenext 
+                            loop 
+                            call fechaConexao
+                            %>
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <label for="status">Status</label>
-                            <select class="form-control" id="status" name="status" required>
-                                <option value="Ativo">Ativo</option>
-                                <option value="Inativo">Inativo</option>
+                        <div class="col-md-6">
+                            <label for="statusLeg">Status</label>
+                            <select class="form-control" id="statusLeg" name="statusLeg" required>
+                                <option disabled=""></option>
+                                <option value="true" <% If statusLeg = true Then %> selected <% End If %>>Sim</option>
+                                <option value="false" <% If statusLeg = false Then %> selected <% End If %>>Não</option>
                             </select>
                         </div>
                     </div>
@@ -89,8 +103,8 @@
             <!-- /.box-body -->
 
             <div class="box-footer">
-              <a href="#" class="btn btn-primary "><i class="fa fa-reply"></i> Voltar</a>
-              <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-check"></i> Cadastrar</button>
+                <a href="javascript:history.back()" class="btn btn-primary"><i class="fa fa-reply"></i> Voltar</a>
+                <button type="submit" class="btn btn-primary pull-right" onClick="return cadastrar()"><i class="fa fa-check"></i> Cadastrar</button>
             </div>
           </form>
         </div>

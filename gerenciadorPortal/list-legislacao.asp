@@ -1,4 +1,19 @@
   <!--#include file="base.asp"-->
+  <%
+call abreConexao
+
+' Excluir registro se o ID for passado e a ação for exclusão
+If Request.Form("acao") = "excluir" And Not IsEmpty(Request.Form("id_diario")) Then
+    Dim id_diario
+    id_diario = Request.Form("id_diario")
+    sql = "DELETE FROM cam_diarioOfi WHERE id_diario = " & id_diario
+    conn.Execute(sql)
+    response.Redirect "list-diario.asp?Resp=3"
+End If
+
+sql = "SELECT id_legislacao, id_categoriaLeg, descricao, anexo_legislacao, id_AutorVer, status_Leg, dataCad FROM cam_legislacao"
+set rs_leg = conn.execute(sql)
+%>
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
   <!--- Content Header--->
@@ -23,6 +38,13 @@
             <!-- /.box-header -->
             <div class="box-body">
               <table id="example1" class="table table-bordered table-striped">
+              <%if rs_leg.eof then%>
+                  <div class="alert alert-danger alert-dismissible" style="background-color: rgba(220, 53, 69, 0.1);">
+                      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                      <h4><i class="icon fa fa-ban"></i> Nenhum Registro Encontrado!</h4>
+                      Não há diários cadastrados na base de dados.
+                  </div>
+              <%Else%>   
                 <thead>
                 <tr>
                   <th>Categoria</th>
@@ -35,13 +57,12 @@
                 </thead>
                 <tbody>
                 <tr>
-                  <td>Projeto de Lei</td>
-                  <td>0254</td>
-                  <td>Edição nº 0007 de 29 de dezembro de 2023</td>
-                  <td>14/07/2024</td>
-                  <td>Ativo</td>
+                  <td><%=rs_leg("")%></td>
+                  <td><%=rs_leg("")%></td>
+                  <td><%=rs_leg("")%></td>
+                  <td><%=rs_leg("")%></td>
+                  <td><%if rs_leg("status_diario") = true then%><span class="label center bg-green">Ativo</span><%else%><span class="label center bg-red">Inativo</span><%end if%></td>
                   <td>
-                  <a href="#" data-skin="skin-blue" class="btn btn-primary btn-xs"><i class="fa fa-star fa-1x"></i></a>
                   <a href="dashboard.php?control=users/create&amp;id=183" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
                   <button data-toggle="modal" data-target=".modal-delete" mdl-name="users" mdl-page="all" type-action="Delete" class="btn-delete-confirm btn btn-danger btn-xs" id="delete_row_183"><i class="fa fa-trash"></i></button>
                   </td>

@@ -1,5 +1,5 @@
-<% Response.CodePage = 65001 %>
 <!--#include file="base.asp"-->
+<% Response.CodePage = 65001 %>
 <%
     id_historia = Request("id_historia")
 
@@ -56,7 +56,95 @@
     }
 
 
+function validarCampos() {
+    let anoFundacao = document.getElementById("anoFundacao").value.trim();
+    let diaAniversario = document.getElementById("diaAniversario").value.trim();
+    let mesAniversario = document.getElementById("mesAniversario").value.trim();
+    let populacao = document.getElementById("populacao").value.trim();
+    let area = document.getElementById("area").value.trim();
+    let conteudo = document.getElementById("editor1").value.trim();
+
+    if (!anoFundacao) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campo obrigatório',
+            text: 'Por favor, preencha o campo "Ano de Fundação".',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            document.getElementById("anoFundacao").focus();
+        });
+        return false;
+    }
+
+    if (!diaAniversario) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campo obrigatório',
+            text: 'Por favor, selecione o "Dia de Aniversário".',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            document.getElementById("diaAniversario").focus();
+        });
+        return false;
+    }
+
+    if (!mesAniversario) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campo obrigatório',
+            text: 'Por favor, selecione o "Mês de Aniversário".',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            document.getElementById("mesAniversario").focus();
+        });
+        return false;
+    }
+
+    if (!populacao) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campo obrigatório',
+            text: 'Por favor, preencha o campo "População".',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            document.getElementById("populacao").focus();
+        });
+        return false;
+    }
+
+    if (!area) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campo obrigatório',
+            text: 'Por favor, preencha o campo "Área".',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            document.getElementById("area").focus();
+        });
+        return false;
+    }
+
+    if (!conteudo) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campo obrigatório',
+            text: 'Por favor, preencha o campo "Conteúdo".',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            document.getElementById("editor1").focus();
+        });
+        return false;
+    }
+
+    return true;
+}
+
       function cadastrar(){
+
+        if (validarCampos() == false) {
+            return false;
+        }        
+
           var form = document.forms["frmHistoria"];
           form.Operacao.value = 2;
           form.action = "crud-historia.asp";
@@ -102,7 +190,7 @@
                                 <input type="text" class="form-control" id="anoFundacao" name="anoFundacao" value="<%= anoFundacao %>">
                             </div>
                             <div class="col-md-2">
-                                <label for="diaAniversario">Dia de Aniversário</label>
+                                <label for="diaAniversario">Dia</label>
                                 <select class="form-control" id="diaAniversario" name="diaAniversario">
                                     <option value="">Selecione o dia</option>
                                     <% 

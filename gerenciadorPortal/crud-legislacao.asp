@@ -18,19 +18,21 @@ If IsObject(Form) Then
         For Each Key in Form.Texts.Keys
             Select Case Key
                 Case "Operacao": Operacao = Form.Texts.Item(Key)
-                Case "title": title = Form.Texts.Item(Key)
-                Case "description": description = Form.Texts.Item(Key)
-                Case "id_regimento": id_regimento = Form.Texts.Item(Key) ' Captura o ID para alteração
+                Case "CatLegislacao": CatLegislacao = Form.Texts.Item(Key)
+                Case "descricao": descricao = Form.Texts.Item(Key)
+                Case "verAutor": verAutor = Form.Texts.Item(Key) ' Captura o ID para alteração
+                Case "statusLeg": statusLeg = Form.Texts.Item(Key) ' Captura o ID para alteração
+                Case "id_legislacao": id_legislacao = Form.Texts.Item(Key) ' Captura o ID para alteração
             End Select
         Next
 
         ' Tratamento do arquivo enviado
-        UpRegimento = 0
+        arquivoLeg = 0
         For Each Field in Form.Files.Items
-            If Field.Name = "UpRegimento" Then
+            If Field.Name = "arquivoLeg" Then
                 NomeArquivo1 = Year(Date) & Month(Date) & Day(Date) & Hour(Now) & Minute(Now) & Second(Now) & "." & Split(Field.FileName, ".")(UBound(Split(Field.FileName, ".")))
                 Field.SaveAs Server.MapPath("upAnexos") & "\" & NomeArquivo1
-                UpRegimento = 1
+                arquivoLeg = 1
             End If  
         Next
     End If
@@ -40,50 +42,33 @@ If IsObject(Form) Then
     Dim rs_exist
     
     ' Trate id_regimento para evitar valores vazios ou não numéricos
-    If IsEmpty(id_regimento) Or Not IsNumeric(id_regimento) Then
-        id_regimento = 0 ' Define para 0 se vazio ou inválido
+    If IsEmpty(id_legislacao) Or Not IsNumeric(id_legislacao) Then
+        id_legislacao = 0 ' Define para 0 se vazio ou inválido
     End If
 
-    sql = "SELECT COUNT(*) AS total FROM cam_regimento WHERE id_regimento = " & id_regimento
-    Set rs_exist = conn.Execute(sql)
-    
-    If rs_exist("total") > 0 Then
-        ' Registro já existe, define operação como "alteração"
-        Operacao = 3
-    Else
-        ' Registro não existe, define operação como "inserção"
-        Operacao = 2
-    End If
-    rs_exist.Close
-    Set rs_exist = Nothing
 
     ' Insere ou atualiza o registro no banco de dados
     If Operacao = 2 Then
         ' Inserção
-        sql = "INSERT INTO cam_regimento (titulo, descricao, anexo_regimento, data_cad, idUsu_Cad) " & _
-              "VALUES ('" & title & "', '" & description & "', '" & NomeArquivo1 & "', GETDATE(), " & Session("idUsu") & ")"
+        sql = "INSERT INTO cam_legislacao (id_categoriaLeg, descricao, anexo_legislacao, id_AutorVer, status_Leg, dataCad, idUsu_Cad) " & _
+              "VALUES ('" & CatLegislacao & "', '" & descricao & "', '" & NomeArquivo1 & "', '" & verAutor & "', 1, GETDATE(), " & Session("idUsu") & ")"
+              'response.write sql
+              'response.end
         conn.Execute(sql)
-
-        ' Recupera o último ID inserido
-        Set rs = conn.Execute("SELECT SCOPE_IDENTITY() AS newID")
-        Dim newID
-        newID = rs("newID")
-        rs.Close
-        Set rs = Nothing
-        
+   
         ' Redireciona passando o ID na URL
-        response.Redirect("regimento.asp?Resp=1&id_regimento=" & newID)
+        response.Redirect("regimento.asp?Resp=1")
     ElseIf Operacao = 3 Then
         ' Atualização
         sql = "UPDATE cam_regimento SET titulo = '" & title & "', descricao = '" & description & "', " & _
               "data_Alt = GETDATE(), idUsu_Alt = " & Session("idUsu")
         
         ' Apenas atualiza o arquivo se houver um novo upload
-        If UpRegimento = 1 Then
+        If arquivoLeg = 1 Then
             sql = sql & ", anexo_regimento = '" & NomeArquivo1 & "'"
         End If
         
-        sql = sql & " WHERE id_regimento = " & id_regimento
+        sql = sql & " WHERE id_legislacao = " & id_legislacao
         conn.Execute(sql)
         
         ' Redireciona com mensagem de sucesso
