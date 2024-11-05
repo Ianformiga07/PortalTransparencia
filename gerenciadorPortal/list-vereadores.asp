@@ -62,14 +62,14 @@ set rs_Vereador = conn.execute(sql)
                   <tbody>
                   <%do while not rs_Vereador.eof %>
                   <tr>
-                    <td><div class="img-thumbnail"><img src="<%=rs_Vereador("")%>" alt="" style="height: 35px; width: 40px;"></div></td>
-                    <td><%=rs_Vereador("")%></td>
-                    <td><%=rs_Vereador("")%></td>
-                    <td><%=rs_Vereador("")%></td>
-                    <td><%if rs_Vereador("statusNoticia") = true then%><span class="label center bg-green">Ativo</span><%else%><span class="label center bg-red">Inativo</span><%end if%></td>
+                    <td><div class="img-thumbnail"><%if rs_Vereador("FotoPerfil") <> "" then%><img src="<%=rs_Vereador("FotoPerfil")%>" alt="" style="height: 45px; width: 45px;"><%else%><img src="images/avatar.jpg" alt="" style="height: 45px; width: 45px;"><%end if%></div></td>
+                    <td><%=rs_Vereador("NomeCompleto")%></td>
+                    <td><%=rs_Vereador("Celular")%></td>
+                    <td><%=rs_Vereador("DataNascimento")%></td>
+                    <td><%if rs_Vereador("statusServidor") = true then%><span class="label center bg-green">Ativo</span><%else%><span class="label center bg-red">Inativo</span><%end if%></td>
                     <td>
-                    <a href="#" onClick="admin('<%=rs_Vereador("id_noticia")%>');" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
-                    <button type="button" onClick="confirmarExclusao('<%=rs_Vereador("id_noticia")%>');" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
+                    <a href="#" onClick="admin('<%=rs_Vereador("id_servidor")%>');" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
+                    <button type="button" onClick="confirmarExclusao('<%=rs_Vereador("id_servidor")%>');" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
                     </td>
                   </tr>
                 <% rs_Vereador.movenext 
