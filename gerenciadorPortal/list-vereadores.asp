@@ -1,4 +1,20 @@
   <!--#include file="base.asp"-->
+  <%
+call abreConexao
+
+' Excluir registro se o ID for passado e a ação for exclusão
+If Request.Form("acao") = "excluir" And Not IsEmpty(Request.Form("id_noticia")) Then
+    Dim id_noticia
+    id_noticia = Request.Form("id_noticia")
+    sql = "DELETE FROM cam_noticias WHERE id_noticia = " & id_noticia
+    conn.Execute(sql)
+    response.Redirect "list-noticias.asp?Resp=3"
+End If
+
+sql = "SELECT  * FROM cam_servidores WHERE (id_Cargo = '15')"
+set rs_Vereador = conn.execute(sql)
+
+%>
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
   <!--- Content Header--->
@@ -21,33 +37,49 @@
                 <a href="cad-vereador.asp" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Novo Cadastro</a>
               </div>
             <!-- /.box-header -->
-            <div class="box-body">
-              <table id="example1" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                  <th></th>
-                  <th>Nome</th>
-                  <th>Fone</th>
-                  <th>Data Nascimento</th>
-                  <th>Status</th>
-                  <th>Ações</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                  <td><div class="img-thumbnail"><img src="images/avatar.jpg" alt="" style="height: 35px; width: 40px;"></div></td>
-                  <td>CARLITO DE SOUSA AMORIM</td>
-                  <td>(63) 99286-3557</td>
-                  <td>01/01/1980</td>
-                  <td>Ativo</td>
-                  <td>
-                  <a href="cad-vereador.asp" class="btn btn-primary btn-xs"><i class="fa fa-plus fa-2x"></i></a>
-                  <button data-toggle="modal" data-target=".modal-delete" mdl-name="users" mdl-page="all" type-action="Delete" class="btn-delete-confirm btn btn-danger btn-xs" id="delete_row_183"><i class="fa fa-trash fa-2x"></i></button>
-                  </td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
+            <form method="post" name="frmNoticia">
+              <input type="hidden" name="id_noticia" id="id_noticia">
+              <input type="hidden" name="acao" id="acao">
+              <div class="box-body">
+                <table id="example1" class="table table-bordered table-striped">
+                  <%if rs_Vereador.eof then%>
+                      <div class="alert alert-danger alert-dismissible" style="background-color: rgba(220, 53, 69, 0.1);">
+                          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                          <h4><i class="icon fa fa-ban"></i> Nenhum Registro Encontrado!</h4>
+                          Não há diários cadastrados na base de dados.
+                      </div>
+                  <%Else%> 
+                  <thead>
+                  <tr>
+                    <th></th>
+                    <th>Nome</th>
+                    <th>Fone</th>
+                    <th>Data Nascimento</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <%do while not rs_Vereador.eof %>
+                  <tr>
+                    <td><div class="img-thumbnail"><img src="<%=rs_Vereador("")%>" alt="" style="height: 35px; width: 40px;"></div></td>
+                    <td><%=rs_Vereador("")%></td>
+                    <td><%=rs_Vereador("")%></td>
+                    <td><%=rs_Vereador("")%></td>
+                    <td><%if rs_Vereador("statusNoticia") = true then%><span class="label center bg-green">Ativo</span><%else%><span class="label center bg-red">Inativo</span><%end if%></td>
+                    <td>
+                    <a href="#" onClick="admin('<%=rs_Vereador("id_noticia")%>');" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
+                    <button type="button" onClick="confirmarExclusao('<%=rs_Vereador("id_noticia")%>');" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
+                    </td>
+                  </tr>
+                <% rs_Vereador.movenext 
+                  loop %>  
+                  </tbody>
+                <%end if%>
+                <%call fechaConexao%>
+                </table>
+              </div>
+            </form>
             <!-- /.box-body -->
           </div>
           <!-- /.box -->
