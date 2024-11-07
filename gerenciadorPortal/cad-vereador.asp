@@ -1,4 +1,8 @@
 <!--#include file="base.asp"-->
+
+<%
+nomeVereador = Request.form("nomeVereador")
+%>
 <!-- Novo Vereador - Formulário Melhorado -->
 <div class="content-wrapper">
   <section class="content-header bg-white p-bottom-5">
@@ -42,21 +46,21 @@
               <div class="row">
                 <div class="col-md-6">
                   <label for="nomeCompleto">Nome Completo</label>
-                  <input type="text" class="form-control" id="nomeCompleto" disabled>
+                  <input type="text" class="form-control" id="nomeCompleto" value="<%=nomeVereador%>" disabled>
                 </div>
                 <div class="col-md-6">
                   <label for="apelido">Apelido</label>
-                  <input type="text" class="form-control" id="apelido">
+                  <input type="text" class="form-control" id="apelido" name="apelido">
                 </div>
               </div>
               <div class="row" style="margin-top: 10px;">
                 <div class="col-md-6">
                   <label for="arquivo">Logo Partido</label>
-                  <input type="file" class="form-control" id="arquivo" accept=".pdf">
+                  <input type="file" class="form-control" id="arquivo" name="arquivo" accept=".pdf">
                 </div>
                 <div class="col-md-6">
                   <label for="ocupacao">Ocupação</label>
-                  <input type="text" class="form-control" id="ocupacao">
+                  <input type="text" class="form-control" id="ocupacao" name="ocupacao">
                 </div>
               </div>
             </div>
@@ -73,29 +77,47 @@
               <div class="row">
                 <div class="col-md-4">
                   <label for="mesaDiretora">Faz Parte da Mesa Diretora?</label>
-                  <select class="form-control" id="mesaDiretora" onchange="toggleMesaDiretora(this.value)">
+                  <select class="form-control" id="mesaDiretora" name="mesaDiretora" onchange="toggleMesaDiretora(this.value)">
                     <option> -- Selecionar --</option>
                     <option value="sim">Sim</option>
                     <option value="nao">Não</option>
                   </select>
                 </div>
             <div id="mostraMesaDiretora" style="display: none;">
+              <%
+              call abreConexao
+              sql = "SELECT id_mandatosLeg, mandatos FROM cam_mandatosLeg"
+              set rs_Mandato = conn.execute(sql)
+              %>
                 <div class="col-md-4">
-                  <label for="funcaoMesa">Ano Legislativo</label>
-                  <select class="form-control" id="funcaoMesa">
+                  <label for="anoLegMesa">Ano Legislativo</label>
+                  <select class="form-control" id="anoLegMesa" name="anoLegMesa">
                     <option> -- Selecionar --</option>
-                    <option>2025/2026</option>
-                    <option>2027/2028</option>
+                    <option disabled></option>
+              <%do while not rs_Mandato.eof%>
+                    <option <%if  rtrim(id_mandatosLeg) = rtrim(rs_Mandato("id_mandatosLeg")) then response.write("selected") end if%> value="<%=rs_Mandato("id_mandatosLeg")%>"><%=rs_Mandato("mandatos")%></option>
+              <% rs_Mandato.movenext 
+              loop 
+              call fechaConexao
+              %>
                   </select>
                 </div>
+              <%
+              call abreConexao
+              sql = "SELECT  id_funcoes, desc_funcoes FROM cam_funcoesLeg WHERE id_funcoes IN (1, 2, 3, 4)"
+              set rs_Mandato = conn.execute(sql)
+              %>
                 <div class="col-md-4">
                   <label for="funcaoMesa">Função</label>
-                  <select class="form-control" id="funcaoMesa">
+                  <select class="form-control" id="funcaoMesa" name="funcaoMesa">
                     <option> -- Selecionar --</option>
-                    <option>Presidente</option>
-                    <option>Vice-Presidente</option>
-                    <option>1° Secretário</option>
-                    <option>2° Secretário</option>
+                    <option disabled></option>
+              <%do while not rs_Mandato.eof%>
+                    <option <%if  rtrim(id_funcoes) = rtrim(rs_Mandato("id_funcoes")) then response.write("selected") end if%> value="<%=rs_Mandato("id_funcoes")%>"><%=rs_Mandato("desc_funcoes")%></option>
+              <% rs_Mandato.movenext 
+              loop 
+              call fechaConexao
+              %>
                   </select>
                 </div>
               </div>
@@ -105,7 +127,7 @@
             <div class="row" style="margin-top: 15px;">
             <div class="col-md-6">
                 <label for="comissoes">Faz Parte de Comissões?</label>
-                <select class="form-control" id="comissoes" onchange="toggleComissoes(this.value)">
+                <select class="form-control" id="comissoes" name="comissoes" onchange="toggleComissoes(this.value)">
                 <option value=""> -- Selecionar --</option>
                 <option value="sim">Sim</option>
                 <option value="nao">Não</option>
@@ -113,32 +135,61 @@
             </div>
 
             <div class="col-md-6" id="anoLegDiv" style="display: none;">
+              <%
+              call abreConexao
+              sql = "SELECT id_mandatosLeg, mandatos FROM cam_mandatosLeg"
+              set rs_anoLegComissao = conn.execute(sql)
+              %>
                 <label for="AnoLegComissao">Ano Legislativo</label>
-                <select class="form-control" id="AnoLegComissao">
+                <select class="form-control" id="AnoLegComissao" name="AnoLegComissao">
                 <option value=""> -- Selecionar --</option>
-                <option value="2025/2026">2025/2026</option>
-                <option value="2027/2028">2027/2028</option>
+                    <option disabled></option>
+              <%do while not rs_anoLegComissao.eof%>
+                    <option <%if  rtrim(id_mandatosLeg) = rtrim(rs_anoLegComissao("id_mandatosLeg")) then response.write("selected") end if%> value="<%=rs_anoLegComissao("id_mandatosLeg")%>"><%=rs_anoLegComissao("mandatos")%></option>
+              <% rs_anoLegComissao.movenext 
+              loop 
+              call fechaConexao
+              %>
                 </select>
             </div>
             </div>
 
             <div class="row" id="mostraComissoes" style="display: none; margin-top: 10px;">
+              <%
+              call abreConexao
+              sql = "SELECT id_tipoComissao, DescComissao FROM cam_tipoComissao"
+              set rs_tipoComissao = conn.execute(sql)
+              %>
             <div class="col-md-6">
                 <label for="nomeComissao">Comissão</label>
-                <select class="form-control" id="nomeComissao" onchange="mostrarCamposComissao(this.value)">
+                <select class="form-control" id="nomeComissao" name="nomeComissao" onchange="mostrarCamposComissao(this.value)">
                 <option value=""> -- Selecionar --</option>
-                <option value="Comissao1">Constituição, Justiça e Redação</option>
-                <!-- Outras opções -->
+                    <option disabled></option>
+              <%do while not rs_tipoComissao.eof%>
+                    <option <%if  rtrim(id_tipoComissao) = rtrim(rs_tipoComissao("id_tipoComissao")) then response.write("selected") end if%> value="<%=rs_tipoComissao("id_tipoComissao")%>"><%=rs_tipoComissao("DescComissao")%></option>
+              <% rs_tipoComissao.movenext 
+              loop 
+              call fechaConexao
+              %>
                 </select>
             </div>
 
-            <div class="col-md-6">
-                <label for="funcaoComissao">Função</label>
-                <select class="form-control" id="funcaoComissao">
-                <option value=""> -- Selecionar --</option>
-                <option value="Presidente">Presidente</option>
-                <option value="Vice-Presidente">Vice-Presidente</option>
-                <option value="Membro">Membro</option>
+              <%
+              call abreConexao
+              sql = "SELECT  id_funcoes, desc_funcoes FROM cam_funcoesLeg WHERE id_funcoes IN (1, 5, 6)"
+              set rs_Mandato = conn.execute(sql)
+              %>
+                <div class="col-md-6">
+                  <label for="funcaoComissao">Função</label>
+                  <select class="form-control" id="funcaoComissao" name="funcaoComissao">
+                    <option> -- Selecionar --</option>
+                    <option disabled></option>
+              <%do while not rs_Mandato.eof%>
+                    <option <%if  rtrim(id_funcoes) = rtrim(rs_Mandato("id_funcoes")) then response.write("selected") end if%> value="<%=rs_Mandato("id_funcoes")%>"><%=rs_Mandato("desc_funcoes")%></option>
+              <% rs_Mandato.movenext 
+              loop 
+              call fechaConexao
+              %>
                 </select>
             </div>
 
@@ -165,7 +216,7 @@
                 <!-- Select Já Teve Mandatos Anteriores -->
                 <div class="col-md-5">
                     <label for="mandatosAnteriores">Já Teve Mandatos Anteriores?</label>
-                    <select class="form-control" id="mandatosAnteriores" onchange="toggleMandatosAnteriores(this.value)">
+                    <select class="form-control" id="mandatosAnteriores" name="mandatosAnteriores" onchange="toggleMandatosAnteriores(this.value)">
                     <option> -- Selecionar --</option>
                     <option value="sim">Sim</option>
                     <option value="nao">Não</option>
@@ -176,11 +227,11 @@
                 <div class="col-md-6" id="mostraMandatosAnteriores" style="display: none;">
                     <div class="col-md-5">
                       <label for="AnoInicioMandato">Ano Início</label>
-                      <input type="text" class="form-control" id="AnoInicioMandato">
+                      <input type="text" class="form-control" id="AnoInicioMandato" name="AnoInicioMandato">
                     </div>
                     <div class="col-md-5">
                       <label for="AnoFimMandato">Ano Fim</label>
-                      <input type="text" class="form-control" id="AnoFimMandato">
+                      <input type="text" class="form-control" id="AnoFimMandato" name="AnoFimMandato">
                     </div>
                     <div class="col-md-2">
                       <button type="button" class="btn btn-success" style="margin-top: 25px;" onclick="adicionarMandato()">Adicionar</button>

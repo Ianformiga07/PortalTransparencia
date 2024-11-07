@@ -2,19 +2,21 @@
   <%
 call abreConexao
 
-' Excluir registro se o ID for passado e a ação for exclusão
-If Request.Form("acao") = "excluir" And Not IsEmpty(Request.Form("id_noticia")) Then
-    Dim id_noticia
-    id_noticia = Request.Form("id_noticia")
-    sql = "DELETE FROM cam_noticias WHERE id_noticia = " & id_noticia
-    conn.Execute(sql)
-    response.Redirect "list-noticias.asp?Resp=3"
-End If
-
 sql = "SELECT  * FROM cam_servidores WHERE (id_Cargo = '15')"
 set rs_Vereador = conn.execute(sql)
 
 %>
+
+<script>
+function admin(id_servidor, nomeVereador) {
+    var form = document.forms["frmCadVereador"];
+    form.id_servidor.value = id_servidor;
+    form.nomeVereador.value = nomeVereador;
+    form.action = "cad-vereador.asp?no=1";
+    form.submit();
+}
+
+</script>
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
   <!--- Content Header--->
@@ -37,9 +39,9 @@ set rs_Vereador = conn.execute(sql)
                 <a href="cad-vereador.asp" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Novo Cadastro</a>
               </div>
             <!-- /.box-header -->
-            <form method="post" name="frmNoticia">
-              <input type="hidden" name="id_noticia" id="id_noticia">
-              <input type="hidden" name="acao" id="acao">
+            <form method="post" name="frmCadVereador">
+              <input type="hidden" name="id_servidor" id="id_servidor">
+              <input type="hidden" name="nomeVereador" id="nomeVereador">
               <div class="box-body">
                 <table id="example1" class="table table-bordered table-striped">
                   <%if rs_Vereador.eof then%>
@@ -68,7 +70,7 @@ set rs_Vereador = conn.execute(sql)
                     <td><%=rs_Vereador("DataNascimento")%></td>
                     <td><%if rs_Vereador("statusServidor") = true then%><span class="label center bg-green">Ativo</span><%else%><span class="label center bg-red">Inativo</span><%end if%></td>
                     <td>
-                    <a href="#" onClick="admin('<%=rs_Vereador("id_servidor")%>');" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
+                    <a href="#" onClick="admin('<%=rs_Vereador("id_servidor")%>', '<%=rtrim(rs_Vereador("NomeCompleto"))%>');" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
                     <button type="button" onClick="confirmarExclusao('<%=rs_Vereador("id_servidor")%>');" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
                     </td>
                   </tr>
